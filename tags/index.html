@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   
-  <title>Archives | 貓圈部落</title>
+  <title>Tags | 貓圈部落</title>
   
   
 
@@ -149,91 +149,51 @@
     <div class='container clearfix'>
         <div class='l_main'>
             
-  <article id="archive-page" class="post article white-box">
-    <section class="archive">
-      
-          <div class="archive-item archive-year mark">
-            <h2>2019</h2>
-            <hr>
-          </div>
-      
-          <div class="archive-item archive-post mark">
-            <a href="/2019/01/14/android-progress-bar/">
-              <time>01-14</time>
-              <span class="title">
-                
-                  Android 原生計量條動畫設計
-                
-              </span>
-            </a>
-          </div>
-      
-          <div class="archive-item archive-post mark">
-            <a href="/2019/01/08/MarkDownItTest/">
-              <time>01-08</time>
-              <span class="title">
-                
-                  Markdown-it 渲染器測試
-                
-              </span>
-            </a>
-          </div>
-      
-          <div class="archive-item archive-post mark">
-            <a href="/2019/01/08/HackMdTest/">
-              <time>01-08</time>
-              <span class="title">
-                
-                  HackMd 語法測試
-                
-              </span>
-            </a>
-          </div>
-      
-    </section>
-  </article>
-
-
-<!-- 根据主题中的设置决定是否在archive中针对摘要部分的MathJax公式加载mathjax.js文件 -->
 
 
 
-    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-    "HTML-CSS": {
-      preferredFont: "TeX",
-      availableFonts: ["STIX","TeX"],
-      linebreaks: { automatic:true },
-      EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
-    },
-    tex2jax: {
-      inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
-      processEscapes: true,
-      ignoreClass: "tex2jax_ignore|dno",
-      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-      equationNumbers: { autoNumber: "AMS" },
-      noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
-      Macros: { href: "{}" }
-    },
-    messageStyle: "none"
-  });
-</script>
-<!-- 给MathJax元素添加has-jax class -->
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-      all[i].SourceElement().parentNode.className += (all[i].SourceElement().parentNode.className ? ' ' : '') + 'has-jax';
-    }
-    console.log("mathjax did loaded!");
-  });
-</script>
-<!-- 通过连接CDN加载MathJax的js代码 -->
-<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
+  <section class="post-list">
+      
+
+
+
+      
+
+      
+        <div class="post-wrapper">
+          <article id="archive-page" class="post article white-box">
+            <section class="archive">
+              <div class="archive-item archive-year mark">
+                <h2>Tags</h2>
+                <hr>
+              </div>
+              <div class="archive-item archive-post mark">
+                
+                  
+                    
+                      <a class="" href="/tags/Android-native/">
+                        <time><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;Android native</time>
+                        <span class="title">
+                          (1)
+                        </span>
+                      </a>
+                    
+                  
+                
+              </div>
+              <br>
+              
+            </section>
+          </article>
+        </div>
+      
+
+      
+
+  </section>
+
+
+
 
 
 
@@ -398,6 +358,24 @@
 
   
   
+    
+      
+        <script>
+          var disqus_shortname = 'nekorings-blog';
+          
+            var disqus_url = 'http://yoursite.com/tags/index.html';
+          
+          (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      
+      
+      
     
   
   
