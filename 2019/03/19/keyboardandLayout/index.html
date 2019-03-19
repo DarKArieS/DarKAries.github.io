@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   
-  <title>Category: C++ | 貓圈部落</title>
+  <title>Android App 避免螢幕鍵盤蓋住RecyclerView底部內容的方法 | 貓圈部落</title>
   
   
 
@@ -148,53 +148,16 @@
     <div class="l_body">
     <div class='container clearfix'>
         <div class='l_main'>
-            
-    <script>
-        window.subData= { title:'分類 : C++'}
-    </script>
-
-
-
-
-  <section class="post-list">
-      
-        
-          
-        
-          
-        
-          
-        
-          
-        
-          
-        
-      
-
-
-
-      
-
-      
-
-      
-        
-          
-            <div class="post-wrapper">
-              <article class="post reveal ">
-    
+            <article id="post" class="post white-box article-type-post" itemscope="" itemprop="blogPost">
+  
 <section class="meta">
   
   
   <div class="meta" id="header-meta">
     
-      <h2 class="title">
-          <a href="/2019/03/04/C-LambdaFunction/">
-              
-                  C++ Lambda Function
-              
-          </a>
-      </h2>
+      
+          <h1 class="title">Android App 避免螢幕鍵盤蓋住RecyclerView底部內容的方法</h1>
+      
     
 
     <div class="new-meta-box">
@@ -210,7 +173,7 @@
         <div class="new-meta-item date">
           <a class="notlink">
             <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-            2019-03-04
+            2019-03-19
           </a>
         </div>
       
@@ -218,13 +181,24 @@
         
           
           <div class="new-meta-item category">
-            <a href="/categories/C/">
+            <a href="/categories/Android-Note/">
               <i class="fas fa-folder-open" aria-hidden="true"></i>
-              C++
+              Android Note
             </a>
           </div>
         
       
+      
+        
+          <div class="new-meta-item browse busuanzi">
+            <a class="notlink">
+              <i class="fas fa-eye" aria-hidden="true"></i>
+              <span id="busuanzi_value_page_pv">
+                <i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i>
+              </span>
+            </a>
+          </div>
+        
       
       
     </div>
@@ -233,48 +207,109 @@
 </section>
 
     <section class="article typo">
-        <p>今天打開了久違的<a href="https://leetcode.com" target="_blank" rel="noopener">LeetCode</a>，用C++寫了題Easy。</p>
-<p>寫完看了看別人的解，突然發現原來C++ 在C++11 也有了lambda function的寫法，寫一篇文以玆紀念。</p>
-<p><a href="https://zh.wikipedia.org/wiki/C%2B%2B11" target="_blank" rel="noopener">Reference</a></p>
+      <div class="article-entry" itemprop="articleBody">
+        <p>最近以練功為目的寫了一個簡單的<a href="https://github.com/DarKArieS/ChatNow" target="_blank" rel="noopener">聊天室App</a>，遇到了一個跟彈出鍵盤有關的問題：如何不讓鍵盤遮住RecyclerView最底部的內容。</p>
+<img src="https://i.imgur.com/x5Wh6Kx.gif" width="30%">
+<a id="more"></a>
+<p>剛開始解決這個問題的思路是寫一個View繼承自editText View並改寫<code>onTouchEvent</code>內彈出鍵盤的方法。研究了下源碼後發現裡面所調用方法跟成員有不少是無法改寫的。</p>
+<p>在網路上查了一下監聽螢幕鍵盤彈出的方法，最有效的方法為監聽Layout的改變。在屬於Layout的view中加入<code>LayouyChangeListener</code>，並在監聽內加入滑到最底部的方法。</p>
+<p>對於每次都滑到最底部感到不滿意，於是改成Layout改變時自動滑動Layout的改變量，營造出內容隨著鍵盤被推起來的效果。<br>
+不過這個方法在滑到最底部的時候會有滑過頭的問題，而在ViewHolder大小為動態的情況下我們無法得知RecyclerView還有多少可以滑動，想了半天還是無法解決。</p>
+<p>有一天，很偶然的，發現其實只要一行就可以解決這個問題。😒<br>
+在RecyclerView的LayoutManager中加入這一行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">layoutManager.stackFromEnd = true</span><br></pre></td></tr></table></figure>
+<p>使得RecyclerView在生成的時候是以底部為基準。<br>
+當鍵盤推出時，為了不擋住最底部的View，自然就會跟著被推起來。</p>
+<img src="https://i.imgur.com/iNluFyT.gif" width="30%">
+<p>讓我們緬懷那些已經失去的時光 😑</p>
+
+      </div>
         
-            <div class="readmore">
-                <a href="/2019/03/04/C-LambdaFunction/" class="flat-box">
-                    <i class="fas fa-book-open fa-fw" aria-hidden="true"></i>
-                    閱讀全文
-                </a>
+          <section class="meta" id="footer-meta">
+            <hr>
+            <div class="new-meta-box">
+              
+                <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-03-19T11:28:27+08:00">
+                  <a class="notlink">
+                    <i class="fas fa-pencil-alt" aria-hidden="true"></i>
+                    2019-03-19
+                  </a>
+                </div>
+              
+              
+                
+                <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Android-native/"><i class="fas fa-hashtag" aria-hidden="true"></i>&nbsp;Android native</a></div>
+              
+              
             </div>
+          </section>
         
 
         
-            <div class="full-width auto-padding tags">
+            <div class="prev-next">
                 
-                    <a href="/tags/C/"><i class="fas fa-hashtag fa-fw"></i>C++</a>
+                
+                    <section class="next">
+                        <span class="art-item-right" aria-hidden="true">
+                            <h6>下一頁&nbsp;<i class="fas fa-chevron-right" aria-hidden="true"></i></h6>
+                            <h4>
+                                <a href="/2019/03/04/C-LambdaFunction/" rel="prev" title="C++ Lambda Function">
+                                    
+                                        C++ Lambda Function
+                                    
+                                </a>
+                            </h4>
+                            
+                                
+                                <h6 class="tags">
+                                    <a class="tag" href="/tags/C/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>C++</a>
+                                </h6>
+                            
+                        </span>
+                    </section>
                 
             </div>
         
+
     </section>
+
 </article>
 
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+<br>
+
+<!-- 显示推荐文章和评论 -->
+
+
+
+  <article class="post white-box comments">
+    <section class="article typo">
+      
+      
+        <h4><i class="fas fa-comments fa-fw" aria-hidden="true"></i>&nbsp;評論</h4>
+        
+          <section id="comments">
+            <div id="disqus_thread">
+              ⚠️  無法加載評論系統，請確保您的網絡能夠正常訪問 <a href="https://disqus.com">Disqus</a> 。
             </div>
-          
+          </section>
+        
+        
         
       
-
-  </section>
-
-
+    </section>
+  </article>
 
 
 
-
-  
-
-  <!-- 根据主题中的设置决定是否在archive中针对摘要部分的MathJax公式加载mathjax.js文件 -->
-  
-
-  
-
-
+<script>
+    window.subData = {
+        title: 'Android App 避免螢幕鍵盤蓋住RecyclerView底部內容的方法',
+        tools: true
+    }
+</script>
 
 
         </div>
@@ -440,6 +475,24 @@
 
   
   
+    
+      
+        <script>
+          var disqus_shortname = 'nekorings-blog';
+          
+            var disqus_url = 'http://yoursite.com/2019/03/19/keyboardandLayout/';
+          
+          (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      
+      
+      
     
   
   
