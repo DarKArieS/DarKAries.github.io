@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>初試 AndroidX，解決 Didn&#39;t find class &quot;android.support.design.widget....&quot; 問題</title>
+      <link href="/2019/03/19/NewToAndroidX/"/>
+      <url>/2019/03/19/NewToAndroidX/</url>
+      
+        <content type="html"><![CDATA[<p>某次Android Studio更新<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>之後，偶然發現在創建新專案時多了個沒看過的選項：<br><code>Use AndroidX artifacts</code></p><img src="https://i.imgur.com/7yTBrJc.png" width="75%"><p>依官網的<a href="https://developer.android.com/jetpack/androidx" target="_blank" rel="noopener">說明</a>，這是個加強版的 <a href="https://developer.android.com/topic/libraries/support-library/index" target="_blank" rel="noopener">Android Support Library</a></p><p>勾勾看會發生什麼事吧！</p><a id="more"></a><h3 id="問題很快的就來了"><a class="header-anchor" href="#問題很快的就來了">¶</a>問題很快的就來了！</h3><p>在調用某些物件後，在執行時期出現了找不到各種class的情況。(Build沒有問題)</p><p>例如，從IDE中拖個AppBarLayout出來，Build完成後執行，App Crash：</p><blockquote><p>Error inflating class android.support.design.widget.CoordinatorLayout<br>…<br>Didn’t find class “android.support.design.widget.CoordinatorLayout” on path: …</p></blockquote><p>欸？<br><code>android.support.design</code>不是應該很理所當然的已經加進Gradle了嗎？<br>打開app gradle file瞧瞧。</p><img src="https://i.imgur.com/ytuQRpJ.png" width="90%"><p>發現相關的Library都被換成帶有AndroidX關鍵字的版本。</p><p>仔細瞧瞧XML檔，發現IDE為你準備的物件仍舊來自於 <code>Andorid.Support.XXX</code> ：</p><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">android.support.design.widget.CoordinatorLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:fitsSystemWindows</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">android.support.design.widget.AppBarLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/appbar"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:fitsSystemWindows</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"192dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">......</span><br></pre></td></tr></table></figure><p>那我們自己加吧！手動的把Android.support.xxx加進來了，問題仍舊存在，依然是可Build不可執行。</p><h3 id="解決方式"><a class="header-anchor" href="#解決方式">¶</a>解決方式</h3><p>忙了一天，終於發現，只需要把xml內的物件依照<a href="https://developer.android.com/jetpack/androidx/migrate" target="_blank" rel="noopener">這個列表</a>替換就解決了。</p><p>期望之後Android Studio更新後能自動抓取對應的Library，不用再手動更改了！</p><hr class="footnotes-sep"><section class="footnotes"><ol class="footnotes-list"><li id="fn1" class="footnote-item"><p>寫這篇的時候使用的是Android Studio 3.3.2 <a href="#fnref1" class="footnote-backref">↩︎</a></p></li></ol></section>]]></content>
+      
+      
+      <categories>
+          
+          <category> Android Note </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Android native </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Android App 避免螢幕鍵盤蓋住RecyclerView底部內容的方法</title>
       <link href="/2019/03/19/keyboardandLayout/"/>
       <url>/2019/03/19/keyboardandLayout/</url>

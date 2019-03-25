@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   
-  <title>Android App 避免螢幕鍵盤蓋住RecyclerView底部內容的方法 | 貓圈部落</title>
+  <title>初試 AndroidX，解決 Didn&#39;t find class &#34;android.support.design.widget....&#34; 問題 | 貓圈部落</title>
   
   
 
@@ -156,7 +156,7 @@
   <div class="meta" id="header-meta">
     
       
-          <h1 class="title">Android App 避免螢幕鍵盤蓋住RecyclerView底部內容的方法</h1>
+          <h1 class="title">初試 AndroidX，解決 Didn&#39;t find class &#34;android.support.design.widget....&#34; 問題</h1>
       
     
 
@@ -208,20 +208,38 @@
 
     <section class="article typo">
       <div class="article-entry" itemprop="articleBody">
-        <p>最近以練功為目的寫了一個簡單的<a href="https://github.com/DarKArieS/ChatNow" target="_blank" rel="noopener">聊天室App</a>，遇到了一個跟彈出鍵盤有關的問題：如何不讓鍵盤遮住RecyclerView最底部的內容。</p>
-<img src="https://i.imgur.com/x5Wh6Kx.gif" width="30%">
+        <p>某次Android Studio更新<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>之後，偶然發現在創建新專案時多了個沒看過的選項：<br>
+<code>Use AndroidX artifacts</code></p>
+<img src="https://i.imgur.com/7yTBrJc.png" width="75%">
+<p>依官網的<a href="https://developer.android.com/jetpack/androidx" target="_blank" rel="noopener">說明</a>，這是個加強版的 <a href="https://developer.android.com/topic/libraries/support-library/index" target="_blank" rel="noopener">Android Support Library</a></p>
+<p>勾勾看會發生什麼事吧！</p>
 <a id="more"></a>
-<p>剛開始解決這個問題的思路是寫一個View繼承自editText View並改寫<code>onTouchEvent</code>內彈出鍵盤的方法。研究了下源碼後發現裡面所調用方法跟成員有不少是無法改寫的。</p>
-<p>在網路上查了一下監聽螢幕鍵盤彈出的方法，最有效的方法為監聽Layout的改變。在屬於Layout的view中加入<code>LayouyChangeListener</code>，並在監聽內加入滑到最底部的方法。</p>
-<p>對於每次都滑到最底部感到不滿意，於是改成Layout改變時自動滑動Layout的改變量，營造出內容隨著鍵盤被推起來的效果。<br>
-不過這個方法在滑到最底部的時候會有滑過頭的問題，而在ViewHolder大小為動態的情況下我們無法得知RecyclerView還有多少可以滑動，想了半天還是無法解決。</p>
-<p>有一天，很偶然的，發現其實只要一行就可以解決這個問題。😒<br>
-在RecyclerView的LayoutManager中加入這一行：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">layoutManager.stackFromEnd = true</span><br></pre></td></tr></table></figure>
-<p>使得RecyclerView在生成的時候是以底部為基準。<br>
-當鍵盤推出時，為了不擋住最底部的View，自然就會跟著被推起來。</p>
-<img src="https://i.imgur.com/iNluFyT.gif" width="30%">
-<p>讓我們緬懷那些已經失去的時光 😑</p>
+<h3 id="問題很快的就來了"><a class="header-anchor" href="#問題很快的就來了">¶</a>問題很快的就來了！</h3>
+<p>在調用某些物件後，在執行時期出現了找不到各種class的情況。(Build沒有問題)</p>
+<p>例如，從IDE中拖個AppBarLayout出來，Build完成後執行，App Crash：</p>
+<blockquote>
+<p>Error inflating class android.support.design.widget.CoordinatorLayout<br>
+…<br>
+Didn’t find class “android.support.design.widget.CoordinatorLayout” on path: …</p>
+</blockquote>
+<p>欸？<br>
+<code>android.support.design</code>不是應該很理所當然的已經加進Gradle了嗎？<br>
+打開app gradle file瞧瞧。</p>
+<img src="https://i.imgur.com/ytuQRpJ.png" width="90%">
+<p>發現相關的Library都被換成帶有AndroidX關鍵字的版本。</p>
+<p>仔細瞧瞧XML檔，發現IDE為你準備的物件仍舊來自於 <code>Andorid.Support.XXX</code> ：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">android.support.design.widget.CoordinatorLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:fitsSystemWindows</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">android.support.design.widget.AppBarLayout</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:id</span>=<span class="string">"@+id/appbar"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:fitsSystemWindows</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_height</span>=<span class="string">"192dp"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span>&gt;</span></span><br><span class="line">			</span><br><span class="line">			......</span><br></pre></td></tr></table></figure>
+<p>那我們自己加吧！手動的把Android.support.xxx加進來了，問題仍舊存在，依然是可Build不可執行。</p>
+<h3 id="解決方式"><a class="header-anchor" href="#解決方式">¶</a>解決方式</h3>
+<p>忙了一天，終於發現，只需要把xml內的物件依照<a href="https://developer.android.com/jetpack/androidx/migrate" target="_blank" rel="noopener">這個列表</a>替換就解決了。</p>
+<p>期望之後Android Studio更新後能自動抓取對應的Library，不用再手動更改了！</p>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>寫這篇的時候使用的是Android Studio 3.3.2 <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
 
       </div>
         
@@ -248,40 +266,21 @@
         
             <div class="prev-next">
                 
-                    <section class="prev">
-                        <span class="art-item-left">
-                            <h6><i class="fas fa-chevron-left" aria-hidden="true"></i>&nbsp;上一頁</h6>
+                
+                    <section class="next">
+                        <span class="art-item-right" aria-hidden="true">
+                            <h6>下一頁&nbsp;<i class="fas fa-chevron-right" aria-hidden="true"></i></h6>
                             <h4>
-                                <a href="/2019/03/19/NewToAndroidX/" rel="prev" title="初試 AndroidX，解決 Didn&#39;t find class &#34;android.support.design.widget....&#34; 問題">
-                                  
-                                      初試 AndroidX，解決 Didn&#39;t find class &#34;android.support.design.widget....&#34; 問題
-                                  
+                                <a href="/2019/03/19/keyboardandLayout/" rel="prev" title="Android App 避免螢幕鍵盤蓋住RecyclerView底部內容的方法">
+                                    
+                                        Android App 避免螢幕鍵盤蓋住RecyclerView底部內容的方法
+                                    
                                 </a>
                             </h4>
                             
                                 
                                 <h6 class="tags">
                                     <a class="tag" href="/tags/Android-native/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>Android native</a>
-                                </h6>
-                            
-                        </span>
-                    </section>
-                
-                
-                    <section class="next">
-                        <span class="art-item-right" aria-hidden="true">
-                            <h6>下一頁&nbsp;<i class="fas fa-chevron-right" aria-hidden="true"></i></h6>
-                            <h4>
-                                <a href="/2019/03/04/C-LambdaFunction/" rel="prev" title="C++ Lambda Function">
-                                    
-                                        C++ Lambda Function
-                                    
-                                </a>
-                            </h4>
-                            
-                                
-                                <h6 class="tags">
-                                    <a class="tag" href="/tags/C/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>C++</a>
                                 </h6>
                             
                         </span>
@@ -325,7 +324,7 @@
 
 <script>
     window.subData = {
-        title: 'Android App 避免螢幕鍵盤蓋住RecyclerView底部內容的方法',
+        title: '初試 AndroidX，解決 Didn&#39;t find class &#34;android.support.design.widget....&#34; 問題',
         tools: true
     }
 </script>
@@ -406,6 +405,20 @@
       
       
         
+  <section class="toc-wrapper">
+    
+<header class="pure">
+  <div><i class="fas fa-list fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;文章目錄</div>
+  
+    <div class="wrapper"><a class="s-toc rightBtn" rel="external nofollow noopener noreferrer" href="javascript:void(0)"><i class="fas fa-thumbtack fa-fw"></i></a></div>
+  
+</header>
+
+    <div class="content pure">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#問題很快的就來了"><span class="toc-text">¶問題很快的就來了！</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#解決方式"><span class="toc-text">¶解決方式</span></a></li></ol>
+    </div>
+  </section>
+
 
       
     
@@ -500,7 +513,7 @@
         <script>
           var disqus_shortname = 'nekorings-blog';
           
-            var disqus_url = 'http://yoursite.com/2019/03/19/keyboardandLayout/';
+            var disqus_url = 'http://yoursite.com/2019/03/19/NewToAndroidX/';
           
           (function(){
             var dsq = document.createElement('script');
