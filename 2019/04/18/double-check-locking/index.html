@@ -214,15 +214,18 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">InboxStyleEmailAppData</span> <span class="keyword">extends</span> <span class="title">MockNotificationData</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> InboxStyleEmailAppData sInstance = <span class="keyword">null</span>;</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> InboxStyleEmailAppData <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (sInstance == <span class="keyword">null</span>) &#123;</span><br><span class="line">            sInstance = getSync();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sInstance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> InboxStyleEmailAppData <span class="title">getSync</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (sInstance == <span class="keyword">null</span>) &#123;</span><br><span class="line">            sInstance = <span class="keyword">new</span> InboxStyleEmailAppData();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> sInstance;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>看完後覺得奇怪，產生實體只要靠getSync()就可以完成了，為什麼還要再加上一層getInstance()並且再次確認靜態成員是否為null ?</p>
 <p>經過高人提示，關鍵字為雙重鎖，立刻餵狗。</p>
+<h2 id="double-checked-locking"><a class="header-anchor" href="#double-checked-locking">¶</a>Double-checked Locking</h2>
 <p>然後發現自己其實以前有讀過<a href="https://blog.csdn.net/fly910905/article/details/79286680" target="_blank" rel="noopener">這一篇</a>，顯然沒有記到腦子裡。</p>
 <p>根據<a href="https://en.wikipedia.org/wiki/Double-checked_locking" target="_blank" rel="noopener">Wiki</a>，確保線程安全的單例的確只需要getSync()來生成或取得實體就可以了。<br>
 synchronized關鍵字確保當兩個執行緒同時在實體尚未生成時使用該方法，不會同時生成兩個實體，使得其中一個執行緒拿不到正確的sInstance成員。</p>
 <p>但是如果每次要獲取單例實體時都使用帶有synchronized關鍵字的方法，系統必須要重複執行上鎖/解鎖的程序。當單例實體已經被生成後，這個鎖就顯得很不必要，且會降低系統效能。因此在外層又再加上一層不帶synchronized的null check函式，當單例實體存在時就不會再經過上鎖/解鎖的程序了。</p>
+<h2 id="一點點的缺陷"><a class="header-anchor" href="#一點點的缺陷">¶</a>一點點的缺陷</h2>
 <p>看起來萬無一失，但故事還沒完。</p>
 <p>有一天，執行緒A呼叫了單例方法，他注意到了沒有單例實體，於是繼續呼叫getSync()來生成實體。<br>
 在執行緒A還在忙的時候，執行緒B來了。B發現A已經來過了，於是很放心的把單例拿出去用了。</p>
 <p>糟糕的是，A其實這時候還沒有忙完，B拿到的是不成熟的，還沒做好的實體(partially constructed object)，於是B並沒辦法真正的使用它，只好躺在地上死給你看(Crash)。</p>
 <p>以上的故事，根據編譯器、快取機制等等各種因素，並不一定每次都會發生。</p>
+<h2 id="volatile-關鍵字"><a class="header-anchor" href="#volatile-關鍵字">¶</a>volatile 關鍵字</h2>
 <p>據說<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>在某個java版本以後，擴展了語意的volatile關鍵字加入了happens-before relationship的機制，可以解決這個問題。</p>
 <p>volatile的原意為當每次要使用該變數時都會讀取當下的值，而不是使用快取的值。而happens-before relationship更進一步確立每次讀寫的順序，類似mutex的機制。</p>
 <p>那要如何使用呢?<br>
@@ -249,7 +252,7 @@ synchronized關鍵字確保當兩個執行緒同時在實體尚未生成時使�
             <hr>
             <div class="new-meta-box">
               
-                <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-04-18T14:01:17+08:00">
+                <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-04-18T14:09:12+08:00">
                   <a class="notlink">
                     <i class="fas fa-pencil-alt" aria-hidden="true"></i>
                     2019-04-18
@@ -409,6 +412,20 @@ synchronized關鍵字確保當兩個執行緒同時在實體尚未生成時使�
       
       
         
+  <section class="toc-wrapper">
+    
+<header class="pure">
+  <div><i class="fas fa-list fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;文章目錄</div>
+  
+    <div class="wrapper"><a class="s-toc rightBtn" rel="external nofollow noopener noreferrer" href="javascript:void(0)"><i class="fas fa-thumbtack fa-fw"></i></a></div>
+  
+</header>
+
+    <div class="content pure">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#double-checked-locking"><span class="toc-text">¶Double-checked Locking</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一點點的缺陷"><span class="toc-text">¶一點點的缺陷</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#volatile-關鍵字"><span class="toc-text">¶volatile 關鍵字</span></a></li></ol>
+    </div>
+  </section>
+
 
       
     
