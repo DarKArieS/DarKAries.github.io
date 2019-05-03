@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   
-  <title>Java 執行緒安全 Double-checked Locking | 貓圈部落</title>
+  <title>執行緒安全 Double-checked Locking | 貓圈部落</title>
   
   
 
@@ -156,7 +156,7 @@
   <div class="meta" id="header-meta">
     
       
-          <h1 class="title">Java 執行緒安全 Double-checked Locking</h1>
+          <h1 class="title">執行緒安全 Double-checked Locking</h1>
       
     
 
@@ -181,9 +181,9 @@
         
           
           <div class="new-meta-item category">
-            <a href="/categories/Java/">
+            <a href="/categories/Design-pattern/">
               <i class="fas fa-folder-open" aria-hidden="true"></i>
-              Java
+              Design pattern
             </a>
           </div>
         
@@ -238,6 +238,10 @@ synchronized關鍵字確保當兩個執行緒同時在實體尚未生成時使�
 <p>volatile關鍵字的作用似乎在每個不同的語言有不同的功能，像是C語言就不同於Java。老實說，我讀了半天，除了C語言的volatile會強調移除編譯器最佳化的功能外，我還是沒辦法強烈的感受到java與c兩者之間的不同，也許要懂底層的實作才有辦法了解，不過先在此打住好了。</p>
 <p>以上純屬看著維基嘴砲，並無實驗佐證。<br>
 有任何錯誤歡迎提出😃</p>
+<h1 id="補充"><a class="header-anchor" href="#補充">¶</a>補充</h1>
+<p>在Google提供的<a href="https://github.com/googlesamples/android-architecture-components/blob/master/BasicRxJavaSampleKotlin/app/src/main/java/com/example/android/observability/persistence/UsersDatabase.kt" target="_blank" rel="noopener">範例</a>中看到使用Kotlin的寫法，可以跟上面比較一下。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">@Database(entities = arrayOf(User::class)</span>, version = <span class="number">1</span>)</span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">UsersDatabase</span> : <span class="type">RoomDatabase</span></span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">abstract</span> <span class="function"><span class="keyword">fun</span> <span class="title">userDao</span><span class="params">()</span></span>: UserDao</span><br><span class="line"></span><br><span class="line">    <span class="keyword">companion</span> <span class="keyword">object</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Volatile</span> <span class="keyword">private</span> <span class="keyword">var</span> INSTANCE: UsersDatabase? = <span class="literal">null</span></span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">getInstance</span><span class="params">(context: <span class="type">Context</span>)</span></span>: UsersDatabase =</span><br><span class="line">                INSTANCE ?: synchronized(<span class="keyword">this</span>) &#123;</span><br><span class="line">                    INSTANCE ?: buildDatabase(context).also &#123; INSTANCE = it &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">buildDatabase</span><span class="params">(context: <span class="type">Context</span>)</span></span> =</span><br><span class="line">                Room.databaseBuilder(context.applicationContext,</span><br><span class="line">                        UsersDatabase::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>, <span class="type">"Sample.db")</span></span></span><br><span class="line">                        .build()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>9</p>
 <hr class="footnotes-sep">
 <section class="footnotes">
 <ol class="footnotes-list">
@@ -252,16 +256,16 @@ synchronized關鍵字確保當兩個執行緒同時在實體尚未生成時使�
             <hr>
             <div class="new-meta-box">
               
-                <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-04-18T14:09:12+08:00">
+                <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-05-03T10:38:22+08:00">
                   <a class="notlink">
                     <i class="fas fa-pencil-alt" aria-hidden="true"></i>
-                    2019-04-18
+                    2019-05-03
                   </a>
                 </div>
               
               
                 
-                <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Java/"><i class="fas fa-hashtag" aria-hidden="true"></i>&nbsp;Java</a></div>
+                <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Java/"><i class="fas fa-hashtag" aria-hidden="true"></i>&nbsp;Java</a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Kotlin/"><i class="fas fa-hashtag" aria-hidden="true"></i>&nbsp;Kotlin</a></div>
               
               
             </div>
@@ -329,7 +333,7 @@ synchronized關鍵字確保當兩個執行緒同時在實體尚未生成時使�
 
 <script>
     window.subData = {
-        title: 'Java 執行緒安全 Double-checked Locking',
+        title: '執行緒安全 Double-checked Locking',
         tools: true
     }
 </script>
@@ -396,9 +400,9 @@ synchronized關鍵字確保當兩個執行緒同時在實體尚未生成時使�
         
           <li><a class="flat-box" title="/categories/C/" href="/categories/C/"><div class="name">C++</div><div class="badge">(1)</div></a></li>
         
-          <li><a class="flat-box" title="/categories/Hexo/" href="/categories/Hexo/"><div class="name">Hexo</div><div class="badge">(2)</div></a></li>
+          <li><a class="flat-box" title="/categories/Design-pattern/" href="/categories/Design-pattern/"><div class="name">Design pattern</div><div class="badge">(1)</div></a></li>
         
-          <li><a class="flat-box" title="/categories/Java/" href="/categories/Java/"><div class="name">Java</div><div class="badge">(1)</div></a></li>
+          <li><a class="flat-box" title="/categories/Hexo/" href="/categories/Hexo/"><div class="name">Hexo</div><div class="badge">(2)</div></a></li>
         
       </ul>
     </div>
@@ -422,8 +426,8 @@ synchronized關鍵字確保當兩個執行緒同時在實體尚未生成時使�
 </header>
 
     <div class="content pure">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#double-checked-locking"><span class="toc-text">¶Double-checked Locking</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一點點的缺陷"><span class="toc-text">¶一點點的缺陷</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#volatile-關鍵字"><span class="toc-text">¶volatile 關鍵字</span></a></li></ol>
-    </div>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#double-checked-locking"><span class="toc-text">¶Double-checked Locking</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一點點的缺陷"><span class="toc-text">¶一點點的缺陷</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#volatile-關鍵字"><span class="toc-text">¶volatile 關鍵字</span></a></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#補充"><span class="toc-text">¶補充</span></a>
+    </li></div>
   </section>
 
 
