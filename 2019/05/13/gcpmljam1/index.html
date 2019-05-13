@@ -179,6 +179,14 @@
       
       
         
+          
+          <div class="new-meta-item category">
+            <a href="/categories/Google-Could-Platform/">
+              <i class="fas fa-folder-open" aria-hidden="true"></i>
+              Google Could Platform
+            </a>
+          </div>
+        
       
       
         
@@ -266,7 +274,7 @@
 <p>點選右下邊的CREATE DATSET，並取個名字，就叫taxi好了。</p>
 <img src="https://cdn.qwiklabs.com/QGOFCQMb3UNnOf2dByXcmcH7%2BX6xwnoQFX0Fdo7fRLU%3D" width="70%">
 <p>好了之後點Create dataset就可以了。</p>
-<h2 id="create-and-train-model"><a class="header-anchor" href="#create-and-train-model">¶</a>Create and train model</h2>
+<h2 id="create-and-train-a-model"><a class="header-anchor" href="#create-and-train-a-model">¶</a>Create and train a model</h2>
 <p>先上Query程式碼：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#standardSQL</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">or</span> <span class="keyword">REPLACE</span> <span class="keyword">MODEL</span> taxi.taxifare_model</span><br><span class="line">OPTIONS</span><br><span class="line">  (model_type=<span class="string">'linear_reg'</span>, labels=[<span class="string">'total_fare'</span>]) <span class="keyword">AS</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 以下跟上一段的程式碼相同</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WITH</span> params <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span></span><br><span class="line">    <span class="number">1</span> <span class="keyword">AS</span> TRAIN,</span><br><span class="line">    <span class="number">2</span> <span class="keyword">AS</span> EVAL</span><br><span class="line">    ),</span><br><span class="line"></span><br><span class="line">  daynames <span class="keyword">AS</span></span><br><span class="line">    (<span class="keyword">SELECT</span> [<span class="string">'Sun'</span>, <span class="string">'Mon'</span>, <span class="string">'Tues'</span>, <span class="string">'Wed'</span>, <span class="string">'Thurs'</span>, <span class="string">'Fri'</span>, <span class="string">'Sat'</span>] <span class="keyword">AS</span> daysofweek),</span><br><span class="line"></span><br><span class="line">  taxitrips <span class="keyword">AS</span> (</span><br><span class="line">  <span class="keyword">SELECT</span></span><br><span class="line">    (tolls_amount + fare_amount) <span class="keyword">AS</span> total_fare,</span><br><span class="line">    daysofweek[ORDINAL(<span class="keyword">EXTRACT</span>(<span class="keyword">DAYOFWEEK</span> <span class="keyword">FROM</span> pickup_datetime))] <span class="keyword">AS</span> <span class="keyword">dayofweek</span>,</span><br><span class="line">    <span class="keyword">EXTRACT</span>(<span class="keyword">HOUR</span> <span class="keyword">FROM</span> pickup_datetime) <span class="keyword">AS</span> hourofday,</span><br><span class="line">    pickup_longitude <span class="keyword">AS</span> pickuplon,</span><br><span class="line">    pickup_latitude <span class="keyword">AS</span> pickuplat,</span><br><span class="line">    dropoff_longitude <span class="keyword">AS</span> dropofflon,</span><br><span class="line">    dropoff_latitude <span class="keyword">AS</span> dropofflat,</span><br><span class="line">    passenger_count <span class="keyword">AS</span> passengers</span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    <span class="string">`nyc-tlc.yellow.trips`</span>, daynames, params</span><br><span class="line">  <span class="keyword">WHERE</span></span><br><span class="line">    trip_distance &gt; <span class="number">0</span> <span class="keyword">AND</span> fare_amount &gt; <span class="number">0</span></span><br><span class="line">    <span class="keyword">AND</span> <span class="keyword">MOD</span>(<span class="keyword">ABS</span>(FARM_FINGERPRINT(<span class="keyword">CAST</span>(pickup_datetime <span class="keyword">AS</span> <span class="keyword">STRING</span>))),<span class="number">1000</span>) = params.TRAIN</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">SELECT</span> *</span><br><span class="line">  <span class="keyword">FROM</span> taxitrips</span><br></pre></td></tr></table></figure>
 <p>我們創造了一個model放在taxi.taxifare_model，也就是在剛創建的taxi之下。<br>
@@ -310,7 +318,7 @@ Qwiklabs的教學就到此為止，一個小時的時限也過得差不多了！
             <hr>
             <div class="new-meta-box">
               
-                <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-05-13T12:02:40+08:00">
+                <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-05-13T12:07:48+08:00">
                   <a class="notlink">
                     <i class="fas fa-pencil-alt" aria-hidden="true"></i>
                     2019-05-13
@@ -319,7 +327,7 @@ Qwiklabs的教學就到此為止，一個小時的時限也過得差不多了！
               
               
                 
-                <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Google-Could-Platfrom/"><i class="fas fa-hashtag" aria-hidden="true"></i>&nbsp;Google Could Platfrom</a></div>
+                <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Google-Could-Platform/"><i class="fas fa-hashtag" aria-hidden="true"></i>&nbsp;Google Could Platform</a></div> <div class="new-meta-item meta-tags"><a class="tag" href="/tags/SQL/"><i class="fas fa-hashtag" aria-hidden="true"></i>&nbsp;SQL</a></div>
               
               
             </div>
@@ -456,6 +464,8 @@ Qwiklabs的教學就到此為止，一個小時的時限也過得差不多了！
         
           <li><a class="flat-box" title="/categories/Design-pattern/" href="/categories/Design-pattern/"><div class="name">Design pattern</div><div class="badge">(1)</div></a></li>
         
+          <li><a class="flat-box" title="/categories/Google-Could-Platform/" href="/categories/Google-Could-Platform/"><div class="name">Google Could Platform</div><div class="badge">(1)</div></a></li>
+        
           <li><a class="flat-box" title="/categories/Hexo/" href="/categories/Hexo/"><div class="name">Hexo</div><div class="badge">(2)</div></a></li>
         
       </ul>
@@ -480,7 +490,7 @@ Qwiklabs的教學就到此為止，一個小時的時限也過得差不多了！
 </header>
 
     <div class="content pure">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#overview"><span class="toc-text">¶Overview</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#explore-dataset"><span class="toc-text">¶Explore dataset</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#training-dataset"><span class="toc-text">¶Training dataset</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#train-model"><span class="toc-text">¶Train model</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#create-a-bigquery-dataset-to-store-models"><span class="toc-text">¶Create a BigQuery dataset to store models</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#create-and-train-model"><span class="toc-text">¶Create and train model</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#evaluate-model-performance"><span class="toc-text">¶Evaluate model performance</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#prediction"><span class="toc-text">¶Prediction</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#improving-the-model"><span class="toc-text">¶Improving the model</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#outro"><span class="toc-text">¶Outro</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#overview"><span class="toc-text">¶Overview</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#explore-dataset"><span class="toc-text">¶Explore dataset</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#training-dataset"><span class="toc-text">¶Training dataset</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#train-model"><span class="toc-text">¶Train model</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#create-a-bigquery-dataset-to-store-models"><span class="toc-text">¶Create a BigQuery dataset to store models</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#create-and-train-a-model"><span class="toc-text">¶Create and train a model</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#evaluate-model-performance"><span class="toc-text">¶Evaluate model performance</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#prediction"><span class="toc-text">¶Prediction</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#improving-the-model"><span class="toc-text">¶Improving the model</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#outro"><span class="toc-text">¶Outro</span></a></li></ol>
     </div>
   </section>
 
