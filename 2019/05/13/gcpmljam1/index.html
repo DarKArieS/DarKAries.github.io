@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  
+  <title>ML Study Jam1:使用 BigQueryML預測計程車費率 | 貓圈部落</title>
+  
+  
+
+  
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- meta -->
+  
+
+  <!-- link -->
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.6.3/css/all.min.css">
+  
+
+  
+
+  
+  <link rel="stylesheet" href="/style.css">
+  
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+
+  
+    <!-- ga -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-130083931-1', 'http://yoursite.com');
+      ga('send', 'pageview');
+    </script>
+  
+  
+</head>
+
+<body>
+    <div id="loading-bar-wrapper">
+  <div id="loading-bar" class="pure"></div>
+</div>
+
+    <script>setLoadingBarProgress(20)</script>
+    <header class="l_header pure">
+	<div class="wrapper">
+		<div class="nav-main container container--flex">
+      <a class="logo flat-box" href="/">
+        
+          貓圈部落
+        
+      </a>
+			<div class="menu">
+				<ul class="h-list">
+          
+  					
+  						<li>
+								<a id="categories" class="nav flat-box" href="/categories/">
+									<i class="fas fa-folder-open fa-fw"></i>&nbsp;Categories
+								</a>
+							</li>
+      			
+  						<li>
+								<a id="tags" class="nav flat-box" href="/tags/">
+									<i class="fas fa-hashtag fa-fw"></i>&nbsp;Tags
+								</a>
+							</li>
+      			
+  						<li>
+								<a id="archives" class="nav flat-box" href="/archives/">
+									<i class="fas fa-archive fa-fw"></i>&nbsp;Archives
+								</a>
+							</li>
+      			
+      		
+				</ul>
+			</div>
+
+			
+				<div class="m_search">
+					<form name="searchform" class="form u-search-form">
+						<input type="text" class="input u-search-input" placeholder="搜尋">
+						<span class="icon"><i class="fas fa-search fa-fw"></i></span>
+					</form>
+				</div>
+			
+			<ul class="switcher h-list">
+				
+					<li class="s-search"><a class="fas fa-search fa-fw" href="javascript:void(0)"></a></li>
+				
+				<li class="s-menu"><a class="fas fa-bars fa-fw" href="javascript:void(0)"></a></li>
+			</ul>
+		</div>
+
+		<div class="nav-sub container container--flex">
+			<a class="logo flat-box"></a>
+			<ul class="switcher h-list">
+				<li class="s-comment"><a class="flat-btn fas fa-comments fa-fw" href="javascript:void(0)"></a></li>
+				<li class="s-toc"><a class="flat-btn fas fa-list fa-fw" href="javascript:void(0)"></a></li>
+			</ul>
+		</div>
+	</div>
+</header>
+	<aside class="menu-phone">
+    <header>
+		<nav class="menu">
+      <ul>
+          
+              
+                  <li>
+										<a id="categories" class="nav flat-box" href="/categories/">
+											<i class="fas fa-folder-open fa-fw"></i>&nbsp;Categories
+										</a>
+                  </li>
+              
+                  <li>
+										<a id="tags" class="nav flat-box" href="/tags/">
+											<i class="fas fa-hashtag fa-fw"></i>&nbsp;Tags
+										</a>
+                  </li>
+              
+                  <li>
+										<a id="archives" class="nav flat-box" href="/archives/">
+											<i class="fas fa-archive fa-fw"></i>&nbsp;Archives
+										</a>
+                  </li>
+              
+       
+      </ul>
+		</nav>
+    </header>
+	</aside>
+
+    <script>setLoadingBarProgress(40);</script>
+    <div class="l_body">
+    <div class='container clearfix'>
+        <div class='l_main'>
+            <article id="post" class="post white-box article-type-post" itemscope="" itemprop="blogPost">
+  
+<section class="meta">
+  
+  
+  <div class="meta" id="header-meta">
+    
+      
+          <h1 class="title">ML Study Jam1:使用 BigQueryML預測計程車費率</h1>
+      
+    
+
+    <div class="new-meta-box">
+      
+        <div class="new-meta-item author">
+          <a href="http://yoursite.com">
+            <i class="fas fa-user" aria-hidden="true"></i>
+            貓圈圈
+          </a>
+        </div>
+      
+      
+        <div class="new-meta-item date">
+          <a class="notlink">
+            <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+            2019-05-13
+          </a>
+        </div>
+      
+      
+        
+      
+      
+        
+          <div class="new-meta-item browse busuanzi">
+            <a class="notlink">
+              <i class="fas fa-eye" aria-hidden="true"></i>
+              <span id="busuanzi_value_page_pv">
+                <i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i>
+              </span>
+            </a>
+          </div>
+        
+      
+      
+    </div>
+    <hr>
+  </div>
+</section>
+
+    <section class="article typo">
+      <div class="article-entry" itemprop="articleBody">
+        <p><a href="https://events.withgoogle.com/ml-study-jam-basic-tw/" target="_blank" rel="noopener">ML Study Jam</a></p>
+<p><a href="https://google.qwiklabs.com/focuses/1797?parent=catalog" target="_blank" rel="noopener">Qwiklabs連結</a></p>
+<p>前陣子<s>從入門到放棄</s>自學機器學習時就有耳聞Google推出了許多雲端工具，例如本篇會使用的BigQuery等等。</p>
+<p>以前自學的時候看到類似的雲端工具時，總會覺得不知該從何處下手才好，最後便下意識地跳過😅</p>
+<p>而Google最近為了推廣自家的GCP雲端平台，發起了ML Study Jam，提供免費的一個月線上學習平台Qwiklabs訂閱。這次主打的Qwiklabs項目會手把手教你如何使用GCP上的各項功能，不會涉及到太多機器學習技術探討。Qwiklabs會提供一個有時間及功能限制的GCP帳號供你練習。在教學中會有一些小關卡，當你在該帳號上完成時就可以過關。</p>
+<p>這邊不會介紹Qwiklabs與GCP介面的基礎使用方式，還沒試過的同學可以先<a href="https://google.qwiklabs.com/quests/23" target="_blank" rel="noopener">來這裡看看</a>，第一個介紹Qwiklabs與GCP的Hands-on lab是免費的。</p>
+<a id="more"></a>
+<p>圖片來自qwiklabs。</p>
+<h1 id="overview"><a class="header-anchor" href="#overview">¶</a>Overview</h1>
+<p><a href="https://cloud.google.com/bigquery/" target="_blank" rel="noopener">BigQuery</a>是 Google 推出的無伺服器企業資料倉儲服務，同時內建<a href="https://cloud.google.com/bigquery/docs/bigqueryml-analyst-start" target="_blank" rel="noopener">BigQuery MachineLearning</a>功能，可以直接在雲端上將資料用於training、evaluation、prediction等等。</p>
+<p>這次的Lab將會使用BigQuery中的公開數據集——New york city taxi cab 2015來建立並評估模型，並用來預測計程車費。</p>
+<h1 id="explore-dataset"><a class="header-anchor" href="#explore-dataset">¶</a>Explore dataset</h1>
+<p>在GCP Console中打開BigQuery頁面，長得像這個樣子：<br>
+左側選單找不到的同學可以從上方的搜尋欄輸入BigQuery。</p>
+<img src="https://cdn.qwiklabs.com/vd3QNHGB4BAyHjAvOHw9qD0iqCPNaHAzY657z%2FGWLtY%3D" width="80%">
+<p>根據教學文件，BigQuery使用相容SQL 2011 standard的SQL語法來操作數據，詳細的訊息可以參考<a href="https://cloud.google.com/bigquery/docs/reference/standard-sql/" target="_blank" rel="noopener">文件</a>。對於之前沒用過SQL的人(我)來說，這個部分我覺得並不是太好上手，花了好幾天的時間研究。</p>
+<p>在Query editor中輸入SQL指令後按下Run按鈕，系統會按照SQL指令將資料撈出來，並透過下方表格呈現結果。也可以試著用看看Data Studio，畫成圖表。</p>
+<p>先來看看數據集中的數據長什麼樣子，像是每個月的trips總數量：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#standardSQL</span></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">  TIMESTAMP_TRUNC(pickup_datetime,</span><br><span class="line">    <span class="keyword">MONTH</span>) <span class="keyword">month</span>,</span><br><span class="line">  <span class="keyword">COUNT</span>(*) trips</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  <span class="string">`bigquery-public-data.new_york.tlc_yellow_trips_2015`</span></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span></span><br><span class="line">  <span class="number">1</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span></span><br><span class="line">  <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>從程式碼中可以看出數據是來自<code>bigquery-public-data.new_york.tlc_yellow_trips_2015</code>，並使用<a href="https://cloud.google.com/bigquery/docs/reference/standard-sql/timestamp_functions" target="_blank" rel="noopener">TIMESTAMP_TRUNC</a>將時間戳轉為月份。</p>
+<p>要瀏覽數據集的細節需要使用擁有BigQuery資源的帳號(這樣才可以計費啊XD)，例如Qwiklabs提供的帳號。這次用的數據集細節可以在<a href="https://bigquery.cloud.google.com/table/nyc-tlc:yellow.trips?tab=preview" target="_blank" rel="noopener">Dataset Preview</a>找到</p>
+<p>想知道BigQuery的其他的公開數據集可以來<a href="https://cloud.google.com/bigquery/public-data/" target="_blank" rel="noopener">BigQuery Public-Data</a>找找。</p>
+<p>等Query完成後，下方顯示結果為：</p>
+<img src="https://cdn.qwiklabs.com/i3PmHY7jPV1XuAIql%2FDlkUHWFWuPJLcW1VECFP9P%2BuI%3D" width="30%">
+<p>每個月都有大約一千萬多筆的資料。</p>
+<p>再來看看紐約的計程車司機在一天中不同的時間點上，跑得有多快：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#standardSQL</span></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">  <span class="keyword">EXTRACT</span>(<span class="keyword">HOUR</span></span><br><span class="line">	<span class="keyword">FROM</span></span><br><span class="line">		pickup_datetime) <span class="keyword">hour</span>,</span><br><span class="line">  <span class="keyword">ROUND</span>(<span class="keyword">AVG</span>(trip_distance / TIMESTAMP_DIFF(dropoff_datetime,</span><br><span class="line">        pickup_datetime,</span><br><span class="line">        <span class="keyword">SECOND</span>))*<span class="number">3600</span>, <span class="number">1</span>) speed</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  <span class="string">`bigquery-public-data.new_york.tlc_yellow_trips_2015`</span></span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">  trip_distance &gt; <span class="number">0</span></span><br><span class="line">  <span class="keyword">AND</span> fare_amount/trip_distance <span class="keyword">BETWEEN</span> <span class="number">2</span></span><br><span class="line">  <span class="keyword">AND</span> <span class="number">10</span></span><br><span class="line">  <span class="keyword">AND</span> dropoff_datetime &gt; pickup_datetime</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span></span><br><span class="line">  <span class="number">1</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span></span><br><span class="line">  <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>這段程式藉由<code>trip_distance</code>、<code>pickup_datetime</code>、<code>dropoff_datetime</code>這三個欄位來計算出計程車的平均速率，並使用ROUND函數換成時速。<br>
+最後使用<code>GROUP BY 1</code>，根據第一欄hour來分群。</p>
+<p>結果像是這個樣子，半夜凌晨大夥兒傾向飆車。</p>
+<img src="https://cdn.qwiklabs.com/%2BF8Mj8HqPM9b8%2Fna1JYPy66xTKDcUu%2BQs1oh5Gy07A4%3D" width="10%">
+<h1 id="training-dataset"><a class="header-anchor" href="#training-dataset">¶</a>Training dataset</h1>
+<p>現在，我們想要試試以下欄位是否是好的features，決定來train一發看看：</p>
+<ul>
+<li>Tolls Amount</li>
+<li>Fare Amount</li>
+<li>Hour of Day</li>
+<li>Pick up address</li>
+<li>Drop off address</li>
+<li>Number of passengers</li>
+</ul>
+<p>我們必須把它們撈出來，並且做一些數據篩選，完整程式碼如下:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#standardSQL</span></span><br><span class="line"><span class="keyword">WITH</span> params <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span></span><br><span class="line">    <span class="number">1</span> <span class="keyword">AS</span> TRAIN,</span><br><span class="line">    <span class="number">2</span> <span class="keyword">AS</span> EVAL</span><br><span class="line">    ),</span><br><span class="line"></span><br><span class="line">  daynames <span class="keyword">AS</span></span><br><span class="line">    (<span class="keyword">SELECT</span> [<span class="string">'Sun'</span>, <span class="string">'Mon'</span>, <span class="string">'Tues'</span>, <span class="string">'Wed'</span>, <span class="string">'Thurs'</span>, <span class="string">'Fri'</span>, <span class="string">'Sat'</span>] <span class="keyword">AS</span> daysofweek),</span><br><span class="line"></span><br><span class="line">  taxitrips <span class="keyword">AS</span> (</span><br><span class="line">  <span class="keyword">SELECT</span></span><br><span class="line">    (tolls_amount + fare_amount) <span class="keyword">AS</span> total_fare,</span><br><span class="line">    daysofweek[ORDINAL(<span class="keyword">EXTRACT</span>(<span class="keyword">DAYOFWEEK</span> <span class="keyword">FROM</span> pickup_datetime))] <span class="keyword">AS</span> <span class="keyword">dayofweek</span>,</span><br><span class="line">    <span class="keyword">EXTRACT</span>(<span class="keyword">HOUR</span> <span class="keyword">FROM</span> pickup_datetime) <span class="keyword">AS</span> hourofday,</span><br><span class="line">    pickup_longitude <span class="keyword">AS</span> pickuplon,</span><br><span class="line">    pickup_latitude <span class="keyword">AS</span> pickuplat,</span><br><span class="line">    dropoff_longitude <span class="keyword">AS</span> dropofflon,</span><br><span class="line">    dropoff_latitude <span class="keyword">AS</span> dropofflat,</span><br><span class="line">    passenger_count <span class="keyword">AS</span> passengers</span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    <span class="string">`nyc-tlc.yellow.trips`</span>, daynames, params</span><br><span class="line">  <span class="keyword">WHERE</span></span><br><span class="line">    trip_distance &gt; <span class="number">0</span> <span class="keyword">AND</span> fare_amount &gt; <span class="number">0</span></span><br><span class="line">    <span class="keyword">AND</span> <span class="keyword">MOD</span>(<span class="keyword">ABS</span>(FARM_FINGERPRINT(<span class="keyword">CAST</span>(pickup_datetime <span class="keyword">AS</span> <span class="keyword">STRING</span>))),<span class="number">1000</span>) = params.TRAIN</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">SELECT</span> *</span><br><span class="line">  <span class="keyword">FROM</span> taxitrips</span><br></pre></td></tr></table></figure>
+<p>這一段使用<code>WITH...AS...</code>開了三個SubQuery。<br>
+<code>params</code>與<code>daynames</code>分別將<code>TRAIN</code> 跟 星期 等「常數」定義好，而最後輸出的查詢則是由<code>taxitrips</code>負責。</p>
+<p><code>params</code>：</p>
+<img src="https://i.imgur.com/mETjvTd.png" width="20%">
+<p><code>daynames</code>：</p>
+<img src="https://i.imgur.com/5asAu7S.png" width="15%">
+<p><code>taxitrips</code>：</p>
+<img src="https://cdn.qwiklabs.com/9%2FORyElhKMLalupP%2FuG%2BZqE%2FTjLX4XYCXnvsEmGLang%3D" width="70%">
+<p>在<code>taxitrips</code>這個查詢中，藉著<code>WHERE</code>來篩選資料：<br>
+<code>trip_distance &gt; 0 AND fare_amount &gt; 0</code></p>
+<p>並以以下條件來區分Training Set 與 Validation Set:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MOD(ABS(FARM_FINGERPRINT(CAST(pickup_datetime AS STRING))),1000) = params.TRAIN</span><br></pre></td></tr></table></figure>
+<p>這裡使用了一個特別的<a href="https://cloud.google.com/bigquery/docs/reference/standard-sql/hash_functions" target="_blank" rel="noopener">FARM_FINGERPRINT</a> Hash函數，可以把字串或位元組轉成長整數。</p>
+<p>這個條件式運作方式為：<br>
+日期轉為字串-&gt;轉為長整數的絕對值-&gt;取除1000的餘數-&gt;判斷答案是否為params.TRAIN，也就是1。<br>
+根據教學文件，可以選出1/1000的數據來作為訓練集。</p>
+<h1 id="train-model"><a class="header-anchor" href="#train-model">¶</a>Train model</h1>
+<h2 id="create-a-bigquery-dataset-to-store-models"><a class="header-anchor" href="#create-a-bigquery-dataset-to-store-models">¶</a>Create a BigQuery dataset to store models</h2>
+<p>在訓練之前，我們必須要開一個可以存放model的空間。</p>
+<p>在左邊的BigQuery Resource選單中，選擇最下方的ProjectID，使用Qwiklabs帳號的話看起來會像<code>qwiklabs-gcp-xxx</code>。</p>
+<p>點選右下邊的CREATE DATSET，並取個名字，就叫taxi好了。</p>
+<img src="https://cdn.qwiklabs.com/QGOFCQMb3UNnOf2dByXcmcH7%2BX6xwnoQFX0Fdo7fRLU%3D" width="70%">
+<p>好了之後點Create dataset就可以了。</p>
+<h2 id="create-and-train-model"><a class="header-anchor" href="#create-and-train-model">¶</a>Create and train model</h2>
+<p>先上Query程式碼：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#standardSQL</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">or</span> <span class="keyword">REPLACE</span> <span class="keyword">MODEL</span> taxi.taxifare_model</span><br><span class="line">OPTIONS</span><br><span class="line">  (model_type=<span class="string">'linear_reg'</span>, labels=[<span class="string">'total_fare'</span>]) <span class="keyword">AS</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 以下跟上一段的程式碼相同</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WITH</span> params <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span></span><br><span class="line">    <span class="number">1</span> <span class="keyword">AS</span> TRAIN,</span><br><span class="line">    <span class="number">2</span> <span class="keyword">AS</span> EVAL</span><br><span class="line">    ),</span><br><span class="line"></span><br><span class="line">  daynames <span class="keyword">AS</span></span><br><span class="line">    (<span class="keyword">SELECT</span> [<span class="string">'Sun'</span>, <span class="string">'Mon'</span>, <span class="string">'Tues'</span>, <span class="string">'Wed'</span>, <span class="string">'Thurs'</span>, <span class="string">'Fri'</span>, <span class="string">'Sat'</span>] <span class="keyword">AS</span> daysofweek),</span><br><span class="line"></span><br><span class="line">  taxitrips <span class="keyword">AS</span> (</span><br><span class="line">  <span class="keyword">SELECT</span></span><br><span class="line">    (tolls_amount + fare_amount) <span class="keyword">AS</span> total_fare,</span><br><span class="line">    daysofweek[ORDINAL(<span class="keyword">EXTRACT</span>(<span class="keyword">DAYOFWEEK</span> <span class="keyword">FROM</span> pickup_datetime))] <span class="keyword">AS</span> <span class="keyword">dayofweek</span>,</span><br><span class="line">    <span class="keyword">EXTRACT</span>(<span class="keyword">HOUR</span> <span class="keyword">FROM</span> pickup_datetime) <span class="keyword">AS</span> hourofday,</span><br><span class="line">    pickup_longitude <span class="keyword">AS</span> pickuplon,</span><br><span class="line">    pickup_latitude <span class="keyword">AS</span> pickuplat,</span><br><span class="line">    dropoff_longitude <span class="keyword">AS</span> dropofflon,</span><br><span class="line">    dropoff_latitude <span class="keyword">AS</span> dropofflat,</span><br><span class="line">    passenger_count <span class="keyword">AS</span> passengers</span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    <span class="string">`nyc-tlc.yellow.trips`</span>, daynames, params</span><br><span class="line">  <span class="keyword">WHERE</span></span><br><span class="line">    trip_distance &gt; <span class="number">0</span> <span class="keyword">AND</span> fare_amount &gt; <span class="number">0</span></span><br><span class="line">    <span class="keyword">AND</span> <span class="keyword">MOD</span>(<span class="keyword">ABS</span>(FARM_FINGERPRINT(<span class="keyword">CAST</span>(pickup_datetime <span class="keyword">AS</span> <span class="keyword">STRING</span>))),<span class="number">1000</span>) = params.TRAIN</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">SELECT</span> *</span><br><span class="line">  <span class="keyword">FROM</span> taxitrips</span><br></pre></td></tr></table></figure>
+<p>我們創造了一個model放在taxi.taxifare_model，也就是在剛創建的taxi之下。<br>
+OPTIONS指定了model的訓練方式以及想預測的目標。<br>
+BigQuery ML目前只提供三種機器學習演算法，分別是<code>linear_reg</code>、<code>logistic_reg</code>以及<code>kmeans</code>。<br>
+在這個範例中我們預測的目標是個連續的數值，故線性回歸<code>linear_reg</code>符合我們的需求。<br>
+演算法本身也有各種的參數可以調整，更詳細的內容就交給<a href="(https://cloud.google.com/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-create)">文檔</a>來解決。</p>
+<p>RUN完後可以看到剛創建的taxi下面蹦出<code>taxifare_model</code>。</p>
+<img src="https://cdn.qwiklabs.com/3e%2B%2Bn9FtlJ4zZDbP1edDClbadjTZmcifikRDzSbd3fA%3D" width="35%">
+<h1 id="evaluate-model-performance"><a class="header-anchor" href="#evaluate-model-performance">¶</a>Evaluate model performance</h1>
+<p>一樣先上Query程式碼：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#standardSQL</span></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">  <span class="keyword">SQRT</span>(mean_squared_error) <span class="keyword">AS</span> rmse</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  ML.EVALUATE(<span class="keyword">MODEL</span> taxi.taxifare_model,</span><br><span class="line">  (</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 此處與上上段程式碼雷同，但使用params.EVAL作為篩選條件，請看33行</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">WITH</span> params <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span></span><br><span class="line">    <span class="number">1</span> <span class="keyword">AS</span> TRAIN,</span><br><span class="line">    <span class="number">2</span> <span class="keyword">AS</span> EVAL</span><br><span class="line">    ),</span><br><span class="line"></span><br><span class="line">  daynames <span class="keyword">AS</span></span><br><span class="line">    (<span class="keyword">SELECT</span> [<span class="string">'Sun'</span>, <span class="string">'Mon'</span>, <span class="string">'Tues'</span>, <span class="string">'Wed'</span>, <span class="string">'Thurs'</span>, <span class="string">'Fri'</span>, <span class="string">'Sat'</span>] <span class="keyword">AS</span> daysofweek),</span><br><span class="line"></span><br><span class="line">  taxitrips <span class="keyword">AS</span> (</span><br><span class="line">  <span class="keyword">SELECT</span></span><br><span class="line">    (tolls_amount + fare_amount) <span class="keyword">AS</span> total_fare,</span><br><span class="line">    daysofweek[ORDINAL(<span class="keyword">EXTRACT</span>(<span class="keyword">DAYOFWEEK</span> <span class="keyword">FROM</span> pickup_datetime))] <span class="keyword">AS</span> <span class="keyword">dayofweek</span>,</span><br><span class="line">    <span class="keyword">EXTRACT</span>(<span class="keyword">HOUR</span> <span class="keyword">FROM</span> pickup_datetime) <span class="keyword">AS</span> hourofday,</span><br><span class="line">    pickup_longitude <span class="keyword">AS</span> pickuplon,</span><br><span class="line">    pickup_latitude <span class="keyword">AS</span> pickuplat,</span><br><span class="line">    dropoff_longitude <span class="keyword">AS</span> dropofflon,</span><br><span class="line">    dropoff_latitude <span class="keyword">AS</span> dropofflat,</span><br><span class="line">    passenger_count <span class="keyword">AS</span> passengers</span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    <span class="string">`nyc-tlc.yellow.trips`</span>, daynames, params</span><br><span class="line">  <span class="keyword">WHERE</span></span><br><span class="line">    trip_distance &gt; <span class="number">0</span> <span class="keyword">AND</span> fare_amount &gt; <span class="number">0</span></span><br><span class="line">    <span class="keyword">AND</span> <span class="keyword">MOD</span>(<span class="keyword">ABS</span>(FARM_FINGERPRINT(<span class="keyword">CAST</span>(pickup_datetime <span class="keyword">AS</span> <span class="keyword">STRING</span>))),<span class="number">1000</span>) = params.EVAL</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">SELECT</span> *</span><br><span class="line">  <span class="keyword">FROM</span> taxitrips</span><br><span class="line"></span><br><span class="line">  ))</span><br></pre></td></tr></table></figure>
+<p>此段使用驗證集<code>params.EVAL</code>、<a href="https://cloud.google.com/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-evaluate" target="_blank" rel="noopener">ML.EVALUATE</a>函數計算推測與正確答案之間的Root mean square error，數值越小代表模型越準確。</p>
+<p>結果來到9.5左右。</p>
+<h1 id="prediction"><a class="header-anchor" href="#prediction">¶</a>Prediction</h1>
+<p>那來看看預測的數值吧！把上一段程式碼換成使用<a href="https://cloud.google.com/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-predict" target="_blank" rel="noopener">ML.PREDICT</a>函數就可以了：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#standardSQL</span></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">*</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">  ML.PREDICT(<span class="keyword">MODEL</span> <span class="string">`taxi.taxifare_model`</span>,</span><br><span class="line">   (</span><br><span class="line"></span><br><span class="line"> <span class="keyword">WITH</span> params <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span></span><br><span class="line">    <span class="number">1</span> <span class="keyword">AS</span> TRAIN,</span><br><span class="line">    <span class="number">2</span> <span class="keyword">AS</span> EVAL</span><br><span class="line">    ),</span><br><span class="line"></span><br><span class="line">  daynames <span class="keyword">AS</span></span><br><span class="line">    (<span class="keyword">SELECT</span> [<span class="string">'Sun'</span>, <span class="string">'Mon'</span>, <span class="string">'Tues'</span>, <span class="string">'Wed'</span>, <span class="string">'Thurs'</span>, <span class="string">'Fri'</span>, <span class="string">'Sat'</span>] <span class="keyword">AS</span> daysofweek),</span><br><span class="line"></span><br><span class="line">  taxitrips <span class="keyword">AS</span> (</span><br><span class="line">  <span class="keyword">SELECT</span></span><br><span class="line">    (tolls_amount + fare_amount) <span class="keyword">AS</span> total_fare,</span><br><span class="line">    daysofweek[ORDINAL(<span class="keyword">EXTRACT</span>(<span class="keyword">DAYOFWEEK</span> <span class="keyword">FROM</span> pickup_datetime))] <span class="keyword">AS</span> <span class="keyword">dayofweek</span>,</span><br><span class="line">    <span class="keyword">EXTRACT</span>(<span class="keyword">HOUR</span> <span class="keyword">FROM</span> pickup_datetime) <span class="keyword">AS</span> hourofday,</span><br><span class="line">    pickup_longitude <span class="keyword">AS</span> pickuplon,</span><br><span class="line">    pickup_latitude <span class="keyword">AS</span> pickuplat,</span><br><span class="line">    dropoff_longitude <span class="keyword">AS</span> dropofflon,</span><br><span class="line">    dropoff_latitude <span class="keyword">AS</span> dropofflat,</span><br><span class="line">    passenger_count <span class="keyword">AS</span> passengers</span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    <span class="string">`nyc-tlc.yellow.trips`</span>, daynames, params</span><br><span class="line">  <span class="keyword">WHERE</span></span><br><span class="line">    trip_distance &gt; <span class="number">0</span> <span class="keyword">AND</span> fare_amount &gt; <span class="number">0</span></span><br><span class="line">    <span class="keyword">AND</span> <span class="keyword">MOD</span>(<span class="keyword">ABS</span>(FARM_FINGERPRINT(<span class="keyword">CAST</span>(pickup_datetime <span class="keyword">AS</span> <span class="keyword">STRING</span>))),<span class="number">1000</span>) = params.EVAL</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">SELECT</span> *</span><br><span class="line">  <span class="keyword">FROM</span> taxitrips</span><br><span class="line"></span><br><span class="line">));</span><br></pre></td></tr></table></figure>
+<p>輸出如下，預測的數值與真實數據看來有段差距：</p>
+<img src="https://cdn.qwiklabs.com/vOie0YpofU3oI7zMJrG9OJT%2Bom89nokwCtceenccSc0%3D" width="80%">
+<h1 id="improving-the-model"><a class="header-anchor" href="#improving-the-model">¶</a>Improving the model</h1>
+<p>根據實驗結果，結果看起來並不是那麼優秀。</p>
+<p>我們再觀察一次想預測的目標之一－－<code>fare_amount</code>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">  <span class="keyword">COUNT</span>(fare_amount) <span class="keyword">AS</span> num_fares,</span><br><span class="line">  <span class="keyword">MIN</span>(fare_amount) <span class="keyword">AS</span> low_fare,</span><br><span class="line">  <span class="keyword">MAX</span>(fare_amount) <span class="keyword">AS</span> high_fare,</span><br><span class="line">  <span class="keyword">AVG</span>(fare_amount) <span class="keyword">AS</span> avg_fare,</span><br><span class="line">  <span class="keyword">STDDEV</span>(fare_amount) <span class="keyword">AS</span> <span class="keyword">stddev</span></span><br><span class="line"><span class="keyword">FROM</span> <span class="string">`nyc-tlc.yellow.trips`</span></span><br></pre></td></tr></table></figure>
+<img src="https://cdn.qwiklabs.com/uX%2Fr9WrJRi7usPBEaElFe7gFgAMrm0Q3exGSbGCeV1I%3D" width="70%">
+<p>挖賽，Maximum竟然衝到503325，誰會花這麼多錢搭計程車啊?</p>
+<p>我們必須要將這種奇怪的數據清掉！</p>
+<p>有書則長，無書則短。最後的篩選如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">WHERE trip_distance &gt; 0 AND fare_amount BETWEEN 6 and 200</span><br><span class="line">    AND pickup_longitude &gt; -75 #limiting of the distance the taxis travel out</span><br><span class="line">    AND pickup_longitude &lt; -73</span><br><span class="line">    AND dropoff_longitude &gt; -75</span><br><span class="line">    AND dropoff_longitude &lt; -73</span><br><span class="line">    AND pickup_latitude &gt; 40</span><br><span class="line">    AND pickup_latitude &lt; 42</span><br><span class="line">    AND dropoff_latitude &gt; 40</span><br><span class="line">    AND dropoff_latitude &lt; 42</span><br></pre></td></tr></table></figure>
+<p>再來train一發！</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">OR</span> <span class="keyword">REPLACE</span> <span class="keyword">MODEL</span> taxi.taxifare_model_2</span><br><span class="line">OPTIONS</span><br><span class="line">  (model_type=<span class="string">'linear_reg'</span>, labels=[<span class="string">'total_fare'</span>]) <span class="keyword">AS</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WITH</span> params <span class="keyword">AS</span> (</span><br><span class="line">    <span class="keyword">SELECT</span></span><br><span class="line">    <span class="number">1</span> <span class="keyword">AS</span> TRAIN,</span><br><span class="line">    <span class="number">2</span> <span class="keyword">AS</span> EVAL</span><br><span class="line">    ),</span><br><span class="line"></span><br><span class="line">  daynames <span class="keyword">AS</span></span><br><span class="line">    (<span class="keyword">SELECT</span> [<span class="string">'Sun'</span>, <span class="string">'Mon'</span>, <span class="string">'Tues'</span>, <span class="string">'Wed'</span>, <span class="string">'Thurs'</span>, <span class="string">'Fri'</span>, <span class="string">'Sat'</span>] <span class="keyword">AS</span> daysofweek),</span><br><span class="line"></span><br><span class="line">  taxitrips <span class="keyword">AS</span> (</span><br><span class="line">  <span class="keyword">SELECT</span></span><br><span class="line">    (tolls_amount + fare_amount) <span class="keyword">AS</span> total_fare,</span><br><span class="line">    daysofweek[ORDINAL(<span class="keyword">EXTRACT</span>(<span class="keyword">DAYOFWEEK</span> <span class="keyword">FROM</span> pickup_datetime))] <span class="keyword">AS</span> <span class="keyword">dayofweek</span>,</span><br><span class="line">    <span class="keyword">EXTRACT</span>(<span class="keyword">HOUR</span> <span class="keyword">FROM</span> pickup_datetime) <span class="keyword">AS</span> hourofday,</span><br><span class="line">    <span class="keyword">SQRT</span>(<span class="keyword">POW</span>((pickup_longitude - dropoff_longitude),<span class="number">2</span>) + <span class="keyword">POW</span>(( pickup_latitude - dropoff_latitude), <span class="number">2</span>)) <span class="keyword">as</span> dist, <span class="comment">#Euclidean distance between pickup and drop off</span></span><br><span class="line">    <span class="keyword">SQRT</span>(<span class="keyword">POW</span>((pickup_longitude - dropoff_longitude),<span class="number">2</span>)) <span class="keyword">as</span> longitude, <span class="comment">#Euclidean distance between pickup and drop off in longitude</span></span><br><span class="line">    <span class="keyword">SQRT</span>(<span class="keyword">POW</span>((pickup_latitude - dropoff_latitude), <span class="number">2</span>)) <span class="keyword">as</span> latitude, <span class="comment">#Euclidean distance between pickup and drop off in latitude</span></span><br><span class="line">    passenger_count <span class="keyword">AS</span> passengers</span><br><span class="line">  <span class="keyword">FROM</span></span><br><span class="line">    <span class="string">`nyc-tlc.yellow.trips`</span>, daynames, params</span><br><span class="line"><span class="keyword">WHERE</span> trip_distance &gt; <span class="number">0</span> <span class="keyword">AND</span> fare_amount <span class="keyword">BETWEEN</span> <span class="number">6</span> <span class="keyword">and</span> <span class="number">200</span></span><br><span class="line">    <span class="keyword">AND</span> pickup_longitude &gt; <span class="number">-75</span> <span class="comment">#limiting of the distance the taxis travel out</span></span><br><span class="line">    <span class="keyword">AND</span> pickup_longitude &lt; <span class="number">-73</span></span><br><span class="line">    <span class="keyword">AND</span> dropoff_longitude &gt; <span class="number">-75</span></span><br><span class="line">    <span class="keyword">AND</span> dropoff_longitude &lt; <span class="number">-73</span></span><br><span class="line">    <span class="keyword">AND</span> pickup_latitude &gt; <span class="number">40</span></span><br><span class="line">    <span class="keyword">AND</span> pickup_latitude &lt; <span class="number">42</span></span><br><span class="line">    <span class="keyword">AND</span> dropoff_latitude &gt; <span class="number">40</span></span><br><span class="line">    <span class="keyword">AND</span> dropoff_latitude &lt; <span class="number">42</span></span><br><span class="line">    <span class="keyword">AND</span> <span class="keyword">MOD</span>(<span class="keyword">ABS</span>(FARM_FINGERPRINT(<span class="keyword">CAST</span>(pickup_datetime <span class="keyword">AS</span> <span class="keyword">STRING</span>))),<span class="number">1000</span>) = params.TRAIN</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">SELECT</span> *</span><br><span class="line">  <span class="keyword">FROM</span> taxitrips</span><br></pre></td></tr></table></figure>
+<p>驗證一下，RMSE結果來到5.1左右，帥呀！</p>
+<h1 id="outro"><a class="header-anchor" href="#outro">¶</a>Outro</h1>
+<p>身為一個好的機器學習工程師，要做的工作還有很多。<br>
+Qwiklabs的教學就到此為止，一個小時的時限也過得差不多了！</p>
+<p>以個人的觀點而言，BQML能使用的功能似乎還是挺有限。<br>
+不過BQ的強項在於處理超大量的數據，要深入研究模型的話可以到<a href="https://colab.research.google.com/" target="_blank" rel="noopener">Colab</a>來看看哦。</p>
+
+      </div>
+        
+          <section class="meta" id="footer-meta">
+            <hr>
+            <div class="new-meta-box">
+              
+                <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-05-13T12:02:40+08:00">
+                  <a class="notlink">
+                    <i class="fas fa-pencil-alt" aria-hidden="true"></i>
+                    2019-05-13
+                  </a>
+                </div>
+              
+              
+                
+                <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Google-Could-Platfrom/"><i class="fas fa-hashtag" aria-hidden="true"></i>&nbsp;Google Could Platfrom</a></div>
+              
+              
+            </div>
+          </section>
+        
+
+        
+            <div class="prev-next">
+                
+                
+                    <section class="next">
+                        <span class="art-item-right" aria-hidden="true">
+                            <h6>下一頁&nbsp;<i class="fas fa-chevron-right" aria-hidden="true"></i></h6>
+                            <h4>
+                                <a href="/2019/04/18/double-check-locking/" rel="prev" title="執行緒安全 Double-checked Locking">
+                                    
+                                        執行緒安全 Double-checked Locking
+                                    
+                                </a>
+                            </h4>
+                            
+                                
+                                <h6 class="tags">
+                                    <a class="tag" href="/tags/Java/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>Java</a> <a class="tag" href="/tags/Kotlin/"><i class="fas fa-hashtag fa-fw" aria-hidden="true"></i>Kotlin</a>
+                                </h6>
+                            
+                        </span>
+                    </section>
+                
+            </div>
+        
+
+    </section>
+
+</article>
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+<br>
+
+<!-- 显示推荐文章和评论 -->
+
+
+
+  <article class="post white-box comments">
+    <section class="article typo">
+      
+      
+        <h4><i class="fas fa-comments fa-fw" aria-hidden="true"></i>&nbsp;評論</h4>
+        
+          <section id="comments">
+            <div id="disqus_thread">
+              ⚠️  無法加載評論系統，請確保您的網絡能夠正常訪問 <a href="https://disqus.com">Disqus</a> 。
+            </div>
+          </section>
+        
+        
+        
+      
+    </section>
+  </article>
+
+
+
+<script>
+    window.subData = {
+        title: 'ML Study Jam1:使用 BigQueryML預測計程車費率',
+        tools: true
+    }
+</script>
+
+
+        </div>
+        <aside class='l_side'>
+            
+  
+  
+    
+      
+      
+        <section class="author">
+  <div class="content pure">
+    
+      <div class="avatar">
+        <img class="avatar" src="/images/Dora.jpg">
+      </div>
+    
+    
+      <div class="text">
+        
+          <h2>貓圈部落</h2>
+        
+        
+          <p>寫個筆記給自己看<br>
+你也可以順便看看</p>
+
+        
+        
+      </div>
+    
+    
+      <div class="social-wrapper">
+        
+          
+            <a href="https://github.com/DarKArieS" class="social flat-btn" target="_blank" rel="external"><i class="social fab fa-github" aria-hidden="true"></i></a>
+          
+        
+      </div>
+    
+  </div>
+</section>
+
+      
+    
+  
+    
+      
+      
+        
+  <section class="category">
+    
+<header class="pure">
+  <div><i class="fas fa-folder-open fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;所有分類</div>
+  
+</header>
+
+    <div class="content pure">
+      <ul class="entry">
+        
+          <li><a class="flat-box" title="/categories/Android-Note/" href="/categories/Android-Note/"><div class="name">Android Note</div><div class="badge">(3)</div></a></li>
+        
+          <li><a class="flat-box" title="/categories/C/" href="/categories/C/"><div class="name">C++</div><div class="badge">(1)</div></a></li>
+        
+          <li><a class="flat-box" title="/categories/Design-pattern/" href="/categories/Design-pattern/"><div class="name">Design pattern</div><div class="badge">(1)</div></a></li>
+        
+          <li><a class="flat-box" title="/categories/Hexo/" href="/categories/Hexo/"><div class="name">Hexo</div><div class="badge">(2)</div></a></li>
+        
+      </ul>
+    </div>
+  </section>
+
+
+      
+    
+  
+    
+      
+      
+        
+  <section class="toc-wrapper">
+    
+<header class="pure">
+  <div><i class="fas fa-list fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;文章目錄</div>
+  
+    <div class="wrapper"><a class="s-toc rightBtn" rel="external nofollow noopener noreferrer" href="javascript:void(0)"><i class="fas fa-thumbtack fa-fw"></i></a></div>
+  
+</header>
+
+    <div class="content pure">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#overview"><span class="toc-text">¶Overview</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#explore-dataset"><span class="toc-text">¶Explore dataset</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#training-dataset"><span class="toc-text">¶Training dataset</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#train-model"><span class="toc-text">¶Train model</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#create-a-bigquery-dataset-to-store-models"><span class="toc-text">¶Create a BigQuery dataset to store models</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#create-and-train-model"><span class="toc-text">¶Create and train model</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#evaluate-model-performance"><span class="toc-text">¶Evaluate model performance</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#prediction"><span class="toc-text">¶Prediction</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#improving-the-model"><span class="toc-text">¶Improving the model</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#outro"><span class="toc-text">¶Outro</span></a></li></ol>
+    </div>
+  </section>
+
+
+      
+    
+  
+
+
+        </aside>
+        <script>setLoadingBarProgress(60);</script>
+    </div>
+    <a class="s-top fas fa-arrow-up fa-fw" href='javascript:void(0)'></a>
+    </div>
+    <footer id="footer" class="clearfix">
+  
+  
+    <div class="social-wrapper">
+      
+        
+          <a href="https://github.com/DarKArieS" class="social fab fa-github flat-btn" target="_blank" rel="external"></a>
+        
+      
+    </div>
+  
+  <br>
+  <div><p>博客內容遵循 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh_TW">姓名標示-非商業性-相同方式分享 4.0 國際 (CC BY-NC-SA 4.0) 協議</a></p>
+</div>
+  <div>本站使用 <a href="https://xaoxuu.com/wiki/material-x/" target="_blank" class="codename">Material X</a> 作為主題，總訪問量為 <span id="busuanzi_value_site_pv"><i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i></span> 次。
+  </div>
+</footer>
+
+    <script>setLoadingBarProgress(80);</script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+
+  <script>
+    var GOOGLE_CUSTOM_SEARCH_API_KEY = "";
+    var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "";
+    var ALGOLIA_API_KEY = "";
+    var ALGOLIA_APP_ID = "";
+    var ALGOLIA_INDEX_NAME = "";
+    var AZURE_SERVICE_NAME = "";
+    var AZURE_INDEX_NAME = "";
+    var AZURE_QUERY_KEY = "";
+    var BAIDU_API_ID = "";
+    var SEARCH_SERVICE = "hexo" || "hexo";
+    var ROOT = "/"||"/";
+    if(!ROOT.endsWith('/'))ROOT += '/';
+  </script>
+
+
+  
+    <script src="https://cdn.jsdelivr.net/npm/scrollreveal@4.0.5/dist/scrollreveal.min.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        const $reveal = $('.reveal');
+    		if ($reveal.length === 0) return;
+    		const sr = ScrollReveal({ distance: 0 });
+    		sr.reveal('.reveal');
+      });
+    </script>
+  
+  
+    <script src="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        Waves.attach('.flat-btn', ['waves-button']);
+        Waves.attach('.float-btn', ['waves-button', 'waves-float']);
+        Waves.attach('.float-btn-light', ['waves-button', 'waves-float', 'waves-light']);
+        Waves.attach('.flat-box', ['waves-block']);
+        Waves.attach('.float-box', ['waves-block', 'waves-float']);
+        Waves.attach('.waves-image');
+        Waves.init();
+      });
+    </script>
+  
+  
+    <script async src="https://cdn.jsdelivr.net/gh/xaoxuu/cdn-busuanzi@2.3/js/busuanzi.pure.mini.js"></script>
+  
+  
+    <!-- fastclick -->
+    <script src="https://cdn.jsdelivr.net/npm/fastclick@1.0.6/lib/fastclick.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        FastClick.attach(document.body)
+      }, false)
+    </script>
+  
+  
+
+  
+  
+    
+      
+        <script>
+          var disqus_shortname = 'nekorings-blog';
+          
+            var disqus_url = 'http://yoursite.com/2019/05/13/gcpmljam1/';
+          
+          (function(){
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript';
+            dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+      
+      
+      
+    
+  
+  
+    <script src="/js/app.js"></script>
+<script src="/js/search.js"></script>
+  
+
+
+
+
+
+
+    <script>setLoadingBarProgress(100);</script>
+</body>
+</html>
