@@ -275,7 +275,7 @@ Android App 的運行方式而用了一些<s>旁門左道</s>特別的方式來�
 <p>你有沒有發現，其實幫浦跟加熱器彼此之間早就是這種關係啦！如果幫浦跟加熱器組合是一條龍服務的話，我們的咖啡機就做不出來了呢。</p>
 <p>如果有一天有個貪心的傢伙想做個有咖啡機功能的大機器也辦的到了。</p>
 <h2 id="依賴反轉"><a class="header-anchor" href="#依賴反轉">¶</a>依賴反轉</h2>
-<p>首先來解決問題二三四。</p>
+<p>然後來解決問題二三四。</p>
 <p>生產咖啡機的廠商想了想，決定訂個標準規則 (interface) ，規定加熱器跟幫浦的規格，比如說必須要有哪些功能等等。具體如何實現這個功能則不在標準之內。<br>
 於是，咖啡機以及其他組件都必須按照這個標準來設計。</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Heater</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">on</span><span class="params">()</span></span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">off</span><span class="params">()</span></span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">isHot</span><span class="params">()</span></span>:<span class="built_in">Boolean</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Pump</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">pump</span><span class="params">()</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -395,10 +395,10 @@ op->op2->op3</textarea><textarea id="flowchart-1-options" style="display: none">
             <hr>
             <div class="new-meta-box">
               
-                <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-05-15T23:51:41+08:00">
+                <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-05-16T10:33:04+08:00">
                   <a class="notlink">
                     <i class="fas fa-pencil-alt" aria-hidden="true"></i>
-                    2019-05-15
+                    2019-05-16
                   </a>
                 </div>
               
