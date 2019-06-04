@@ -20,6 +20,7 @@
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
   
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.6.3/css/all.min.css">
   
 
@@ -212,7 +213,7 @@
 <p>寫完看了看別人的解，突然發現原來C++ 在C++11 也有了lambda function的寫法，寫一篇文以玆紀念。</p>
 <p><a href="https://zh.wikipedia.org/wiki/C%2B%2B11" target="_blank" rel="noopener">Reference</a></p>
 <a id="more"></a>
-<h2 id="基礎用法"><a class="header-anchor" href="#基礎用法">¶</a>基礎用法</h2>
+<h2 id="基礎用法"><a class="header-anchor" href="#基礎用法">● </a>基礎用法</h2>
 <p>最簡單的結構長得像這樣：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[](<span class="keyword">int</span> x, <span class="keyword">int</span> y) &#123; <span class="keyword">return</span> x + y; &#125;</span><br></pre></td></tr></table></figure>
 <p>在這裡三種括號都用上了，來看看它們都做了些什麼。</p>
@@ -227,7 +228,7 @@
 有經驗的高人可以指點一下😛</p>
 <p>把它當物件使用時要使用auto關鍵字宣告</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> &#123;</span></span><br><span class="line">	<span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">runLambda</span><span class="params">(<span class="keyword">int</span> (*f)(<span class="keyword">int</span>,<span class="keyword">int</span>), <span class="keyword">int</span> x, <span class="keyword">int</span> y)</span></span>&#123;<span class="built_in">cout</span>&lt;&lt;f(x,y)&lt;&lt;<span class="built_in">endl</span>;&#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; someList(<span class="number">5</span>,<span class="number">1</span>);</span><br><span class="line">	<span class="keyword">int</span> total = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">auto</span> y = [](<span class="keyword">int</span> x, <span class="keyword">int</span> y) &#123; <span class="keyword">int</span> z = x+y; <span class="keyword">return</span> z; &#125;;</span><br><span class="line">	A a;</span><br><span class="line">	a.runLambda(y,<span class="number">10</span>,<span class="number">5</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="閉包-closure"><a class="header-anchor" href="#閉包-closure">¶</a>閉包 (Closure)</h2>
+<h2 id="閉包-closure"><a class="header-anchor" href="#閉包-closure">● </a>閉包 (Closure)</h2>
 <p>當Lambda function的功能會需要用到外部的變數時，必須將傳入function的方法事先在<code>[]</code>中設定好。<br>
 有以下幾種組合：</p>
 <ul>
@@ -252,10 +253,10 @@
             <hr>
             <div class="new-meta-box">
               
-                <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-05-16T14:44:13+08:00">
+                <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-06-04T17:05:06+08:00">
                   <a class="notlink">
                     <i class="fas fa-pencil-alt" aria-hidden="true"></i>
-                    2019-05-16
+                    2019-06-04
                   </a>
                 </div>
               
@@ -443,7 +444,7 @@
 </header>
 
     <div class="content pure">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基礎用法"><span class="toc-text">¶基礎用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#閉包-closure"><span class="toc-text">¶閉包 (Closure)</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基礎用法"><span class="toc-text">● 基礎用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#閉包-closure"><span class="toc-text">● 閉包 (Closure)</span></a></li></ol>
     </div>
   </section>
 

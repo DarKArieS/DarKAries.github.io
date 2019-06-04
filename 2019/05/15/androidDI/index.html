@@ -20,6 +20,7 @@
   
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
   
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.6.3/css/all.min.css">
   
 
@@ -209,7 +210,7 @@
     <section class="article typo">
       <div class="article-entry" itemprop="articleBody">
         <p><a href="https://drive.google.com/open?id=14P34DkHrt8KHfEYg-8EHOGk3P_cwSrt_" target="_blank" rel="noopener">簡報版</a></p>
-<p>最近還是在閱讀一些 <a href="https://github.com/googlesamples/android-architecture-components" target="_blank" rel="noopener">Google Android 範例</a>，有個叫做 Dagger 的東西常常出現，讓人以為又要開始算Hermitian $H^{\dagger}$ 矩陣了。<br>
+<p>最近還是在閱讀一些 <a href="https://github.com/googlesamples/android-architecture-components" target="_blank" rel="noopener">Google Android 範例</a>，有個叫做 Dagger 的東西常常出現，讓人以為又要開始算Hermitian <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>H</mi><mrow><mo>†</mo></mrow></msup></mrow><annotation encoding="application/x-tex">H^{\dagger}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.849108em;"></span><span class="strut bottom" style="height:0.849108em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.08125em;">H</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord">†</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span> 矩陣了。<br>
 該框架引入了一堆Annotation，看得頭昏眼花， Ctrl+B 追了半天什麼心得都沒有(誤)</p>
 <p>好啦，亂扯一通。大家都知道 Dagger 在做的事情是依賴注入 (Dependency Injection, DI) ，那它到底在幹嘛？我們幹嘛要用它？</p>
 <p>網路上關於DI的文章隨便抓都一大把，看得頭昏眼花。<br>
@@ -219,8 +220,8 @@ Android App 的運行方式而用了一些<s>旁門左道</s>特別的方式來�
 <p>於是這篇文章先不從 Android App 的角度切入，有請 <a href="https://google.github.io/dagger/" target="_blank" rel="noopener">Dagger</a> 官方提供的 <a href="https://github.com/google/dagger/tree/master/examples/simple/src/main/java/coffee" target="_blank" rel="noopener">Coffemaker</a> 範例來現身說法先。</p>
 <p>在這篇文中會使用 Kotlin 語言，<s>接地氣</s>，可以參考看看。</p>
 <a id="more"></a>
-<h1 id="dependency-依賴的故事"><a class="header-anchor" href="#dependency-依賴的故事">¶</a>Dependency 依賴的故事</h1>
-<h2 id="做一台咖啡機"><a class="header-anchor" href="#做一台咖啡機">¶</a>做一台咖啡機</h2>
+<h1 id="dependency-依賴的故事"><a class="header-anchor" href="#dependency-依賴的故事">● </a>Dependency 依賴的故事</h1>
+<h2 id="做一台咖啡機"><a class="header-anchor" href="#做一台咖啡機">● </a>做一台咖啡機</h2>
 <p>現在我們有一台咖啡機 (CoffeeMaker) ，組成的零件有幫浦 (Pump) 、加熱計 (Heater)。</p>
 <p>咖啡的製作流程如下：</p>
 <ul>
@@ -239,7 +240,7 @@ Android App 的運行方式而用了一些<s>旁門左道</s>特別的方式來�
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Coffeemaker</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> heater = ElectricHeater()</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> pump = Thermosiphon(heater)</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">brew</span><span class="params">()</span></span>&#123;</span><br><span class="line">        heater.on()</span><br><span class="line">        pump.pump()</span><br><span class="line">        println(<span class="string">" [_]P coffee! [_]P "</span>)</span><br><span class="line">        heater.off()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>很好，看起來沒什麼問題，故事結束了。</p>
 <p>才不。</p>
-<h2 id="依賴關係"><a class="header-anchor" href="#依賴關係">¶</a>依賴關係</h2>
+<h2 id="依賴關係"><a class="header-anchor" href="#依賴關係">● </a>依賴關係</h2>
 <p>讓我們來分析一下各個零件之間的關係。</p>
 <!-- 
 <div id="flowchart-1" class="flow-chart"></div>
@@ -266,7 +267,7 @@ Android App 的運行方式而用了一些<s>旁門左道</s>特別的方式來�
 <p>…</p>
 <p>從軟體工程的角度來看，我們會說這些組件有著高<a href="https://en.wikipedia.org/wiki/Coupling_(computer_programming)" target="_blank" rel="noopener">相依性</a> (High dependency, high coupling) ，牽一髮而動全身，而且物件無法被重用 (Reuse) 。</p>
 <p>好，那我們來改個設計，解決這些問題。</p>
-<h2 id="解開依賴-decouple-依賴注入"><a class="header-anchor" href="#解開依賴-decouple-依賴注入">¶</a>解開依賴 (Decouple) - 依賴注入</h2>
+<h2 id="解開依賴-decouple-依賴注入"><a class="header-anchor" href="#解開依賴-decouple-依賴注入">● </a>解開依賴 (Decouple) - 依賴注入</h2>
 <p>首先解決狀況一，只要調整一下產線就可以了。</p>
 <p>我們將幫浦跟加熱器委外生產，同時將咖啡機模組化。</p>
 <p>現在我們的配方變成這樣：</p>
@@ -276,7 +277,7 @@ Android App 的運行方式而用了一些<s>旁門左道</s>特別的方式來�
 <p>我們也可以設計成透過接口 (setter) 來獲得零件，這裡就不把程式碼秀出來了。</p>
 <p>你有沒有發現，其實幫浦跟加熱器彼此之間早就是這種關係啦！如果幫浦跟加熱器組合是一條龍服務的話，我們的咖啡機就做不出來了呢。</p>
 <p>如果有一天有個貪心的傢伙想做個有咖啡機功能的大機器也辦的到了。</p>
-<h2 id="依賴反轉"><a class="header-anchor" href="#依賴反轉">¶</a>依賴反轉</h2>
+<h2 id="依賴反轉"><a class="header-anchor" href="#依賴反轉">● </a>依賴反轉</h2>
 <p>然後來解決問題二三四。</p>
 <p>生產咖啡機的廠商想了想，決定訂個標準規則 (interface) ，規定加熱器跟幫浦的規格，比如說必須要有哪些功能等等。具體如何實現這個功能則不在標準之內。<br>
 於是，咖啡機以及其他組件都必須按照這個標準來設計。</p>
@@ -294,7 +295,7 @@ MagicHeater 也不成問題。</p>
 <p>原本的狀況是，咖啡機必須要配合低層模組來設計。<br>
 現在的狀況則是高層模組以及低層模組都必須要配合 interface 來設計。</p>
 <p>在軟體工程中，這種方式被稱作依賴反轉、相依性反轉、控制反轉 … 等等。</p>
-<h2 id="降低成本-提高安全-誤"><a class="header-anchor" href="#降低成本-提高安全-誤">¶</a>降低成本、提高安全 (誤)</h2>
+<h2 id="降低成本-提高安全-誤"><a class="header-anchor" href="#降低成本-提高安全-誤">● </a>降低成本、提高安全 (誤)</h2>
 <p><s>(標題要下什麼才好呀)</s></p>
 <p>現在要製造咖啡機，我們最少要擁有三條供應鏈：生產咖啡機、生產幫浦、生產加熱器。<br>
 也就是說，每當在不同的地方要生出一台咖啡機時，我們也必須生出至少一組加熱器跟幫浦。</p>
@@ -313,7 +314,7 @@ MagicHeater 也不成問題。</p>
 <p>這樣一來，隨時隨地都可以取得一臺全新的咖啡機！而且內部組件也都被包裝起來不隨便給人用了。</p>
 <p>而這些生成實體用的物件，還能視需求搭配單例模式來使用，使得每次提供的加熱器、幫浦或是 Injector 都是同一個，達到重用、節省運算資源。</p>
 <p>註： 在這一章中， pump 與 heater 並沒有被解耦，而是一整組直接包進Injector中。需要的話我們可以如法炮製將 pump 與 heater 分開，程式會變得非常的長。</p>
-<h1 id="dagger-依賴注入框架"><a class="header-anchor" href="#dagger-依賴注入框架">¶</a>Dagger 依賴注入框架</h1>
+<h1 id="dagger-依賴注入框架"><a class="header-anchor" href="#dagger-依賴注入框架">● </a>Dagger 依賴注入框架</h1>
 <p>為了達到好擴充好維護好測試的目的，我們多寫了很多的程式碼，但自己寫的東西總是自己最明白。</p>
 <p>有一天，一名新的工程師被聘進來，身為老鳥的我們必須費盡唇舌的解釋生產線如何運作。</p>
 <p>有了依賴注入框架，我們只要把框架的文件丟給他就好了。</p>
@@ -323,55 +324,55 @@ MagicHeater 也不成問題。</p>
 <p>把 Dagger2 加入 Gradle 中吧！<br>
 在使用Kotlin的環境中， <a href="https://blog.jetbrains.com/kotlin/2015/06/better-annotation-processing-supporting-stubs-in-kapt/" target="_blank" rel="noopener">Kotlin 官方建議把註解解釋器 (annotation processor) 換成 kapt</a></p>
 <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">...</span><br><span class="line">    implementation <span class="string">'com.google.dagger:dagger:2.17'</span></span><br><span class="line">    kapt <span class="string">'com.google.dagger:dagger-compiler:2.17'</span></span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="還是咖啡機的故事"><a class="header-anchor" href="#還是咖啡機的故事">¶</a>還是咖啡機的故事</h2>
-<h3 id="inject"><a class="header-anchor" href="#inject">¶</a>Inject</h3>
+<h2 id="還是咖啡機的故事"><a class="header-anchor" href="#還是咖啡機的故事">● </a>還是咖啡機的故事</h2>
+<h3 id="inject"><a class="header-anchor" href="#inject">● </a>Inject</h3>
 <p>首先，我們改造一下需要依賴注入的幫浦以及咖啡機，把需要被注入的物件 (加熱器) 用 <code>@Inject</code> 標記起來。</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Thermosiphon</span> <span class="meta">@Inject</span> <span class="keyword">constructor</span></span>(<span class="keyword">val</span> heater: Heater) : Pump &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">pump</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span>(heater.isHot())&#123;</span><br><span class="line">            println(<span class="string">"=&gt; =&gt; pumping =&gt; =&gt;"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CoffeeMaker</span> <span class="meta">@Inject</span> <span class="keyword">constructor</span></span>(<span class="keyword">private</span> <span class="keyword">val</span> heater: Heater, <span class="keyword">private</span> <span class="keyword">val</span> pump: Pump) &#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">brew</span><span class="params">()</span></span>&#123;</span><br><span class="line">        heater.on()</span><br><span class="line">        pump.pump()</span><br><span class="line">        println(<span class="string">" [_]P coffee! [_]P "</span>)</span><br><span class="line">        heater.off()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在Dagger2中， <code>@Inject</code> 可以用來標記建構子、屬性、以及函式，這裡以標記建構子作為範例。</p>
-<h3 id="module"><a class="header-anchor" href="#module">¶</a>Module</h3>
+<h3 id="module"><a class="header-anchor" href="#module">● </a>Module</h3>
 <p>接下來建立 Module ，他的腳色相當於前一章 Injector 的腳色，負責產生零件實體。</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Module(includes = [PumpModule::class])</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CoffeeMakerModule</span> </span>&#123;</span><br><span class="line">   <span class="meta">@Provides</span></span><br><span class="line">   <span class="function"><span class="keyword">fun</span> <span class="title">provideHeater</span><span class="params">()</span></span>:Heater&#123;</span><br><span class="line">       <span class="keyword">return</span> ElectricHeater()</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Module</span></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">PumpModule</span></span>&#123;</span><br><span class="line">    <span class="meta">@Binds</span></span><br><span class="line">    <span class="keyword">abstract</span> <span class="function"><span class="keyword">fun</span> <span class="title">providePump</span><span class="params">(pump: <span class="type">Thermosiphon</span>)</span></span>:Pump</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>由於 <code>Thermosiphon</code> 也依賴於 <code>Heater</code> ，因此幫浦的提供方法不使用 <code>@Provides</code> ，而是用 <code>@Binds</code> 將提供幫浦的方法以及我們選擇的幫浦實作類別 (Thermosiphon) 連結起來。<br>
 最後使用 <code>includes</code> 將兩個模組連結起來，Dagger會將同一個加熱器同時注入到咖啡機以及幫浦中。</p>
-<h3 id="component"><a class="header-anchor" href="#component">¶</a>Component</h3>
+<h3 id="component"><a class="header-anchor" href="#component">● </a>Component</h3>
 <p>最後則是產生咖啡機的一條龍產線 Component ，相當於前一章的 CoffeeMakerProvider 。</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component(modules = [CoffeeMakerModule::class])</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">CoffeeComponent</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">provideCoffeeMaker</span><span class="params">()</span></span> : CoffeeMaker</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>我們只要告訴 Dagger 要使用的模組以及要產生的咖啡機類別就可以了。</p>
-<h3 id="做咖啡囉"><a class="header-anchor" href="#做咖啡囉">¶</a>做咖啡囉</h3>
+<h3 id="做咖啡囉"><a class="header-anchor" href="#做咖啡囉">● </a>做咖啡囉</h3>
 <p>東西都準備好了之後， build 這個專案。 Dagger2 會根據這些註解以及介面，為我們產生相對應的程式碼實作。</p>
 <p>讓我們試著做一台咖啡機，用這台咖啡機做一杯咖啡。</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">val</span> coffeeProvider = DaggerCoffeeComponent.builder().build()</span><br><span class="line">    <span class="keyword">val</span> coffeeMaker = coffeeProvider.provideCoffeeMaker()</span><br><span class="line">    coffeeMaker.brew()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>DaggerCoffeeComponent是程式碼產生器自動產生的類別。</p>
 <p>執行結果如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">~ ~ ~ heating ~ ~ ~</span><br><span class="line">=&gt; =&gt; pumping =&gt; =&gt;</span><br><span class="line"> [_]P coffee! [_]P</span><br></pre></td></tr></table></figure>
-<h2 id="dagger2-in-android"><a class="header-anchor" href="#dagger2-in-android">¶</a>Dagger2 in Android</h2>
+<h2 id="dagger2-in-android"><a class="header-anchor" href="#dagger2-in-android">● </a>Dagger2 in Android</h2>
 <p>咖啡的故事結束了，我們把場景拉回 Android App。</p>
 <p>由於 Android 中很多組件的實體是由 Android 系統掌控，我們沒辦法請框架幫我們產生已經注入好的 Activity 並交給 Android 調用。</p>
 <p>後來，以下的追加套件就出現了：</p>
 <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">...</span><br><span class="line">    implementation <span class="string">'com.google.dagger:dagger-android:2.17'</span></span><br><span class="line">    implementation <span class="string">'com.google.dagger:dagger-android-support:2.17'</span> <span class="comment">// if you use the support libraries</span></span><br><span class="line">    kapt <span class="string">'com.google.dagger:dagger-android-processor:2.17'</span></span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>這邊舉一個栗子。簡單的 Activity 注入範例 (我也還在學習中，也許改天會有個續篇吧…改天😶)</p>
 <p>現在有一個 Activity ，需要一個 ViewModel工廠實體。工廠是什麼東西就先不在此討論。</p>
-<h3 id="inject-v2"><a class="header-anchor" href="#inject-v2">¶</a>Inject</h3>
+<h3 id="inject-v2"><a class="header-anchor" href="#inject-v2">● </a>Inject</h3>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Inject</span></span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> viewModelFactory: ViewModelFactory</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>由於 Activity 沒有建構子，因此在創造成員物件的時候注入需要的物件。</p>
-<h3 id="module-v2"><a class="header-anchor" href="#module-v2">¶</a>Module</h3>
+<h3 id="module-v2"><a class="header-anchor" href="#module-v2">● </a>Module</h3>
 <p>跟前一章的方法沒什麼太大的不同，使用ViewModelFactory的建構子來創造實體。</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Module</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivityModule</span></span>&#123;</span><br><span class="line">    <span class="meta">@Provides</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">provideViewModelFactory</span><span class="params">()</span></span> : ViewModelFactory&#123;</span><br><span class="line">        <span class="keyword">return</span> ViewModelFactory()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="component-v2"><a class="header-anchor" href="#component-v2">¶</a>Component</h3>
+<h3 id="component-v2"><a class="header-anchor" href="#component-v2">● </a>Component</h3>
 <p>這裡必須要在定義 modules 時引入 dagger.android 中的組件，<code>AndroidInjectionModule</code> ：</p>
 <p>而原本輸出已注入實體的方法變成了需要輸入 activity 的方法。</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component(modules = [</span></span><br><span class="line"><span class="meta">    MainActivityModule::class,</span></span><br><span class="line"><span class="meta">    AndroidInjectionModule::class</span></span><br><span class="line"><span class="meta">])</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">MainActivityComponent</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">inject</span><span class="params">(activity:<span class="type">MainActivity</span>)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="run"><a class="header-anchor" href="#run">¶</a>Run</h3>
+<h3 id="run"><a class="header-anchor" href="#run">● </a>Run</h3>
 <p>設定完成，按下 Build 之後獲得 Dagger2 幫我們產生的類別 <code>DaggerMainActivityComponent</code> ，用它在 activity 的生命週期中 <strong>自己注入自己</strong> 。</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="meta">@Inject</span></span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> viewModelFactory: ViewModelFactory</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        setContentView(R.layout.activity_main)</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// inject what you need</span></span><br><span class="line">        DaggerMainActivityComponent.builder().build().inject(<span class="keyword">this</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在這個生命週期之後，標註 <code>@Inject</code> 的物件就會被注入，也就是說有實體可以用了。</p>
-<h3 id="正確的注入姿勢"><a class="header-anchor" href="#正確的注入姿勢">¶</a>正確的注入姿勢</h3>
+<h3 id="正確的注入姿勢"><a class="header-anchor" href="#正確的注入姿勢">● </a>正確的注入姿勢</h3>
 <p>以上僅是做個簡單的注入處理。</p>
 <p>官方提供的<a href="https://google.github.io/dagger/android" target="_blank" rel="noopener">教學</a>將注入端延伸到了 Application 類別來初始化。<br>
 有興趣的看官可以參考看看，看過以上的例子，應該會比較容易看得懂官方的作法。</p>
 <!-- # Dagger 以外 -->
-<h1 id="outro"><a class="header-anchor" href="#outro">¶</a>Outro</h1>
+<h1 id="outro"><a class="header-anchor" href="#outro">● </a>Outro</h1>
 <p>寫這篇文花了快一個星期的時間，過程中一直在懷疑流程到底對不對，這些的程式碼到底有沒有必要。</p>
 <p>也許經驗不足就是會這個樣子。</p>
 <p>Dagger2 還有很多其他的功能，像是傳遞生成實體所需要的參數、定 Scope 、設成單例、 MultiBinds 、blabla…，也許改天會有個續篇…改天😶</p>
@@ -396,10 +397,10 @@ op->op2->op3</textarea><textarea id="flowchart-1-options" style="display: none">
             <hr>
             <div class="new-meta-box">
               
-                <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-05-16T14:44:13+08:00">
+                <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-06-04T17:05:06+08:00">
                   <a class="notlink">
                     <i class="fas fa-pencil-alt" aria-hidden="true"></i>
-                    2019-05-16
+                    2019-06-04
                   </a>
                 </div>
               
@@ -568,7 +569,7 @@ op->op2->op3</textarea><textarea id="flowchart-1-options" style="display: none">
 </header>
 
     <div class="content pure">
-      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#dependency-依賴的故事"><span class="toc-text">¶Dependency 依賴的故事</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#做一台咖啡機"><span class="toc-text">¶做一台咖啡機</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#依賴關係"><span class="toc-text">¶依賴關係</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解開依賴-decouple-依賴注入"><span class="toc-text">¶解開依賴 (Decouple) - 依賴注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#依賴反轉"><span class="toc-text">¶依賴反轉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#降低成本-提高安全-誤"><span class="toc-text">¶降低成本、提高安全 (誤)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#dagger-依賴注入框架"><span class="toc-text">¶Dagger 依賴注入框架</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#還是咖啡機的故事"><span class="toc-text">¶還是咖啡機的故事</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#inject"><span class="toc-text">¶Inject</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#module"><span class="toc-text">¶Module</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#component"><span class="toc-text">¶Component</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#做咖啡囉"><span class="toc-text">¶做咖啡囉</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dagger2-in-android"><span class="toc-text">¶Dagger2 in Android</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#inject-v2"><span class="toc-text">¶Inject</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#module-v2"><span class="toc-text">¶Module</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#component-v2"><span class="toc-text">¶Component</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#run"><span class="toc-text">¶Run</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#正確的注入姿勢"><span class="toc-text">¶正確的注入姿勢</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#outro"><span class="toc-text">¶Outro</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#dependency-依賴的故事"><span class="toc-text">● Dependency 依賴的故事</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#做一台咖啡機"><span class="toc-text">● 做一台咖啡機</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#依賴關係"><span class="toc-text">● 依賴關係</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解開依賴-decouple-依賴注入"><span class="toc-text">● 解開依賴 (Decouple) - 依賴注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#依賴反轉"><span class="toc-text">● 依賴反轉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#降低成本-提高安全-誤"><span class="toc-text">● 降低成本、提高安全 (誤)</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#dagger-依賴注入框架"><span class="toc-text">● Dagger 依賴注入框架</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#還是咖啡機的故事"><span class="toc-text">● 還是咖啡機的故事</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#inject"><span class="toc-text">● Inject</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#module"><span class="toc-text">● Module</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#component"><span class="toc-text">● Component</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#做咖啡囉"><span class="toc-text">● 做咖啡囉</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dagger2-in-android"><span class="toc-text">● Dagger2 in Android</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#inject-v2"><span class="toc-text">● Inject</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#module-v2"><span class="toc-text">● Module</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#component-v2"><span class="toc-text">● Component</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#run"><span class="toc-text">● Run</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#正確的注入姿勢"><span class="toc-text">● 正確的注入姿勢</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#outro"><span class="toc-text">● Outro</span></a></li></ol>
     </div>
   </section>
 
